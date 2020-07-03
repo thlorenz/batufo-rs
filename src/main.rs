@@ -5,10 +5,12 @@ use std::time::Duration;
 use sdl2::{event::Event, keyboard::Keycode, rect::Rect, video::Window};
 
 use crate::engine::assets::image_asset::ImageAsset;
+use std::error::Error;
 
+mod arena;
 mod engine;
 
-pub fn main() -> Result<(), String> {
+pub fn main() -> Result<(), Box<dyn Error>> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
@@ -25,7 +27,7 @@ pub fn main() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
 
-    let asset = ImageAsset::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp");
+    let asset = ImageAsset::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp")?;
 
     println!("loaded asset {:?}", asset);
 
