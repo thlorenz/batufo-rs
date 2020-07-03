@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt;
 
 use sdl2::rect::Rect;
+use sdl2::render::Texture;
 use sdl2::surface::Surface;
 
 pub struct ImageAsset {
@@ -12,34 +13,39 @@ pub struct ImageAsset {
     pub tiles: u32,
     pub item_width: u32,
     pub item_height: u32,
-    pub surface: Surface<'static>,
-    #[allow(dead_code)]
+    pub surface: Option<Surface<'static>>,
+    pub texture: Option<Texture<'static>>,
     path: &'static str,
 }
 
 #[allow(dead_code)]
 impl ImageAsset {
-    pub fn new(
-        width: u32,
-        height: u32,
-        rows: u32,
-        cols: u32,
-        path: &'static str,
-    ) -> Result<Self, Box<dyn Error>> {
-        // TODO: support loading other image types than bmp
-        let surface = Surface::load_bmp(path)?;
-
-        Ok(ImageAsset {
+    pub fn new(width: u32, height: u32, rows: u32, cols: u32, path: &'static str) -> Self {
+        ImageAsset {
             width,
             height,
             rows,
             cols,
             path,
-            surface,
             tiles: (rows * cols),
             item_width: width / cols,
             item_height: height / rows,
-        })
+            surface: None,
+            texture: None,
+        }
+    }
+
+    /*
+    pub fn surface(&self) -> &Surface {
+        &self.surface.unwrap()
+    }
+     */
+
+    pub fn load(&mut self) -> Result<(), Box<dyn Error>> {
+        // TODO: support loading other image types than bmp
+        let surface: Surface<'static> = Surface::load_bmp(self.path)?;
+        self.surface = Some(surface);
+        Ok(())
     }
 
     pub fn rect(&self, row: u32, col: u32) -> Rect {
