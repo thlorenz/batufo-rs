@@ -1,6 +1,5 @@
 extern crate sdl2;
 
-use batufo;
 use batufo::{Config, WindowSettings};
 
 pub fn main() {

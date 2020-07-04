@@ -24,8 +24,8 @@ pub struct Tilemap {
 
 #[allow(dead_code)]
 fn get_bounds(row: &str) -> (usize, usize) {
-    let start = row.find("=").unwrap_or(0);
-    let end = row.rfind("=").unwrap_or(start);
+    let start = row.find('=').unwrap_or(0);
+    let end = row.rfind('=').unwrap_or(start);
     let end = if end == start { row.len() - 1 } else { end };
     (start, end)
 }
@@ -44,6 +44,7 @@ impl Tilemap {
         let ntiles = nrows * ncols;
 
         let tiles: Vec<&Tile> = vec![&Tile::OutOfBounds; ntiles];
+        #[allow(clippy::needless_range_loop)]
         for row in 0..nrows {
             let line = lines[row];
             let (start, end) = get_bounds(line);
