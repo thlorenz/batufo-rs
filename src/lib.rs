@@ -1,5 +1,6 @@
-use std::collections::HashMap;
 use std::error::Error;
+use std::fmt;
+use std::time::Duration;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -8,12 +9,12 @@ use sdl2::render::WindowCanvas;
 use sdl2::video::{Window, WindowBuildError, WindowBuilder};
 use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 
-use crate::engine::assets::image_asset::ImageAsset;
-use std::time::Duration;
+use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 
 mod arena;
 mod engine;
 
+#[derive(fmt::Debug)]
 pub struct WindowSettings {
     pub x: i32,
     pub y: i32,
@@ -23,35 +24,33 @@ pub struct WindowSettings {
     pub resizable: bool,
 }
 
+#[derive(fmt::Debug)]
 pub struct Config {
     pub window_settings: WindowSettings,
-    pub image_assets: HashMap<&'static str, ImageAsset>,
 }
 
 pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
-    let sdl_context: Sdl = sdl2::init()?;
-    let video_subsystem = sdl_context.video()?;
+    println!("config {:?}", config);
 
-    load_assets(&config.image_assets)?;
+    let image_assets = ImageAssets::new()?;
+    let asset: &ImageAsset = image_assets
+        .assets
+        .get("floor-tiles")
+        .expect("floor-tiles not loaded");
+
+    println!("floor tiles ${:?}", asset);
+
+    let sdl_context: Sdl = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
     let window: Window = build_window(&video_subsystem, &config.window_settings)?;
-    let canvas = build_canvas(window)?;
 
-    // TODO: how to propagate error here if this is None?
-    let floor_tiles = config.image_assets.get("floor-tiles").unwrap();
-    draw_buildings(canvas, &floor_tiles)?;
+    let mut canvas = build_canvas(window)?;
+    draw_buildings(&mut canvas, &asset)?;
 
+    println!("starting event loop");
     start_event_loop(&sdl_context);
     Ok(())
-}
-
-pub fn create_assets() -> HashMap<&'static str, ImageAsset> {
-    let mut map: HashMap<&'static str, ImageAsset> = HashMap::new();
-    map.insert(
-        "floor-tiles",
-        ImageAsset::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp"),
-    );
-    map
 }
 
 fn start_event_loop(sdl_context: &Sdl) {
@@ -73,16 +72,15 @@ fn start_event_loop(sdl_context: &Sdl) {
     }
 }
 
-fn draw_buildings(mut canvas: WindowCanvas, asset: &ImageAsset) -> Result<(), Box<dyn Error>> {
+fn draw_buildings(canvas: &mut WindowCanvas, asset: &ImageAsset) -> Result<(), Box<dyn Error>> {
     let win = canvas.window();
     let size = win.size();
     let rows: u32 = size.1 / asset.item_height + 1;
     let cols: u32 = size.0 / asset.item_width + 1;
-
-    let texture = asset.texture.as_ref().unwrap();
+    let texture_creator = canvas.texture_creator();
+    let texture = asset.surface.as_texture(&texture_creator)?;
 
     canvas.clear();
-
     let mut idx: u32 = 0;
     for row in 0..rows {
         for col in 0..cols {
@@ -105,13 +103,13 @@ fn draw_buildings(mut canvas: WindowCanvas, asset: &ImageAsset) -> Result<(), Bo
             )?;
         }
     }
-
     canvas.present();
+
     Ok(())
 }
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
-    window.into_canvas().accelerated().build()
+    window.into_canvas().build()
 }
 
 fn build_window(
@@ -125,12 +123,4 @@ fn build_window(
         builder.resizable();
     }
     builder.build()
-}
-
-fn load_assets(assets: &HashMap<&'static str, ImageAsset>) -> Result<(), Box<dyn Error>> {
-    for _asset in assets.values() {
-        // TODO: how can we mutate a value inside a map?
-        // asset.load()?;
-    }
-    Ok(())
 }

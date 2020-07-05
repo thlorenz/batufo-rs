@@ -4,17 +4,16 @@ use batufo::{Config, WindowSettings};
 
 pub fn main() {
     let window_settings = WindowSettings {
-        x: -1200,
+        x: -500,
         y: 0,
         title: "batufo",
         width: 500,
         height: 500,
         resizable: true,
     };
-    let image_assets = batufo::create_assets();
-    let config = Config {
-        window_settings,
-        image_assets,
-    };
-    batufo::start(&config).unwrap();
+    let config = Config { window_settings };
+    match batufo::start(&config) {
+        Ok(_) => {}
+        Err(err) => eprint!("fatal {:?}", err),
+    }
 }
