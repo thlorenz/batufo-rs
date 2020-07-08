@@ -3,31 +3,81 @@ use std::error::Error;
 use std::fmt;
 use std::vec::Vec;
 
-#[allow(dead_code)]
+const EMPTY: char = ' ';
+
+#[derive(Clone)]
 pub enum Tile {
-    /* 0 */ OutOfBounds,
-    /* 1 */ Empty,
-    /* 2 */ Hole,
-    /* 3 */ Wall,
-    /* 4 */ Player,
-    /* 5 */ Medkit,
-    /* 6 */ Shield,
-    /* 7 */ Bomb,
+    OutOfBounds = 0,
+    Empty = 1,
+    Hole = 2,
+    Wall = 3,
+    Player = 4,
+    Medkit = 5,
+    Shield = 6,
+    Bomb = 7,
+    Teleport1 = 8,
+    Teleport2 = 9,
+    Teleport3 = 10,
+    Teleport4 = 11,
+    Teleport5 = 12,
+    Teleport6 = 13,
+    Teleport7 = 14,
+    Teleport8 = 15,
 }
 
-#[allow(dead_code)]
 pub struct Tilemap {
-    tiles: Vec<&'static Tile>,
+    tiles: Vec<Tile>,
     nrows: u32,
     ncols: u32,
 }
 
-#[allow(dead_code)]
 fn get_bounds(row: &str) -> (usize, usize) {
     let start = row.find('=').unwrap_or(0);
     let end = row.rfind('=').unwrap_or(start);
     let end = if end == start { row.len() - 1 } else { end };
     (start, end)
+}
+
+fn tile_from_char(c: char) -> Result<Tile, String> {
+    match c {
+        EMPTY => Ok(Tile::Empty),
+        'x' => Ok(Tile::Hole),
+        'p' => Ok(Tile::Player),
+        '=' => Ok(Tile::Wall),
+        '+' => Ok(Tile::Medkit),
+        's' => Ok(Tile::Shield),
+        'b' => Ok(Tile::Bomb),
+        '1' => Ok(Tile::Teleport1),
+        '2' => Ok(Tile::Teleport2),
+        '3' => Ok(Tile::Teleport3),
+        '4' => Ok(Tile::Teleport4),
+        '5' => Ok(Tile::Teleport5),
+        '6' => Ok(Tile::Teleport6),
+        '7' => Ok(Tile::Teleport7),
+        '8' => Ok(Tile::Teleport8),
+        _ => Err(format!("Unknown char {}", c)),
+    }
+}
+
+fn char_from_tile(tile: &Tile) -> char {
+    match tile {
+        Tile::OutOfBounds => 'X',
+        Tile::Empty => ' ',
+        Tile::Hole => 'x',
+        Tile::Wall => '=',
+        Tile::Player => 'p',
+        Tile::Medkit => '+',
+        Tile::Shield => 's',
+        Tile::Bomb => 'b',
+        Tile::Teleport1 => '1',
+        Tile::Teleport2 => '2',
+        Tile::Teleport3 => '3',
+        Tile::Teleport4 => '4',
+        Tile::Teleport5 => '5',
+        Tile::Teleport6 => '6',
+        Tile::Teleport7 => '7',
+        Tile::Teleport8 => '8',
+    }
 }
 
 impl Tilemap {
@@ -43,19 +93,22 @@ impl Tilemap {
         let ncols = lines.iter().fold(0, |acc, s| max(acc, s.len()));
         let ntiles = nrows * ncols;
 
-        let tiles: Vec<&Tile> = vec![&Tile::OutOfBounds; ntiles];
+        let mut tiles: Vec<Tile> = vec![Tile::OutOfBounds; ntiles];
+
         #[allow(clippy::needless_range_loop)]
         for row in 0..nrows {
             let line = lines[row];
             let (start, end) = get_bounds(line);
-            let _tile_row = nrows - row - 1;
-            for _col in start..end {
-                // TODO: read up on indexing strings
-                // let char: char = line.get(col)?;
+            let tile_row = nrows - row - 1;
+            let mut col: usize = start;
+            for c in line.chars().into_iter().skip(start).take(end - start + 1) {
+                let idx = tile_row * ncols + col;
+                let tile = tile_from_char(c)?;
+                tiles[idx] = tile;
+                col = col + 1;
             }
         }
 
-        println!("lines: ${:?}", lines);
         let _start = 0;
 
         Ok(Tilemap {
@@ -63,6 +116,18 @@ impl Tilemap {
             nrows: nrows as u32,
             ncols: ncols as u32,
         })
+    }
+
+    fn to_string(&self) -> String {
+        let mut s = String::new();
+        for row in self.tiles.chunks(self.ncols as usize).rev() {
+            for tile in row {
+                let c = char_from_tile(tile);
+                s.push(c);
+            }
+            s.push('\n');
+        }
+        s
     }
 }
 
@@ -74,9 +139,11 @@ impl fmt::Debug for Tilemap {
 Tilemap {{
   nrows: {nrows},
   ncols: {ncols}
+{to_string}
 }}",
             nrows = self.nrows,
-            ncols = self.ncols
+            ncols = self.ncols,
+            to_string = self.to_string()
         )
     }
 }
@@ -93,17 +160,17 @@ mod tilemap_tests {
 =======================
 =         p           =
 =                     =
-=====           p     =
+=====           p =====
 =     ====        =
-=   d =  =        =
+=     =  =        =
 =     ====        =
-=====                 ====
+=====              =======
 =   +   p       p        =
 =                     ====
 =======================
 
 ";
-        let tilemap = Tilemap::new(terrain);
+        let tilemap = Tilemap::new(terrain).expect("should produce a tilemap");
         print!("tilemap {:?}", tilemap);
     }
 }
