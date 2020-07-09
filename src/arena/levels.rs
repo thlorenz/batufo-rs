@@ -13,7 +13,7 @@ impl Level {
     fn new(name: &'static str, level_string: &'static str) -> Level {
         Level { name, level_string }
     }
-    fn create_tilemap(&self, tile_size: f32) -> Result<Tilemap, Box<dyn Error>> {
+    fn create_tilemap(&self, tile_size: u32) -> Result<Tilemap, Box<dyn Error>> {
         Tilemap::new(self.level_string, tile_size)
     }
 }

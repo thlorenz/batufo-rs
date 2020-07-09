@@ -1,5 +1,5 @@
 use crate::arena::tilemap::{needs_floor_tile, Tilemap};
-use crate::engine::tile_position::TilePosition;
+use crate::engine::position::TilePosition;
 use std::fmt;
 
 #[derive(fmt::Debug)]
@@ -32,8 +32,8 @@ impl Arena {
 mod tests {
     use super::*;
 
-    const TILE_SIZE: f32 = 1.0;
-    const CENTER: f32 = TILE_SIZE / 2.0;
+    const TILE_SIZE: u32 = 2;
+    const CENTER: i32 = (TILE_SIZE / 2) as i32;
     #[test]
     fn floor_tiles() {
         let small_terrain = "

@@ -45,7 +45,7 @@ pub fn needs_floor_tile(tile: &Tile) -> bool {
 }
 
 pub struct Tilemap {
-    pub tile_size: f32,
+    pub tile_size: u32,
     pub tiles: Vec<Tile>,
     pub nrows: u32,
     pub ncols: u32,
@@ -102,7 +102,7 @@ fn char_from_tile(tile: &Tile) -> char {
 
 impl Tilemap {
     #[allow(dead_code)]
-    pub fn new(terrain: &str, tile_size: f32) -> Result<Self, Box<dyn Error>> {
+    pub fn new(terrain: &str, tile_size: u32) -> Result<Self, Box<dyn Error>> {
         let lines: Vec<&str> = terrain
             .lines()
             .skip_while(|s| s.trim().is_empty())
@@ -191,7 +191,7 @@ mod tests {
 =======================
 
 ";
-        let tilemap = Tilemap::new(terrain, 24.0).expect("should produce a tilemap");
+        let tilemap = Tilemap::new(terrain, 24).expect("should produce a tilemap");
         print!("tilemap {:?}", tilemap);
     }
 }
