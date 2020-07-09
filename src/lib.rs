@@ -1,3 +1,5 @@
+// TODO: remove once we got things integrated
+#![allow(dead_code)]
 use std::error::Error;
 use std::fmt;
 use std::time::Duration;
@@ -13,6 +15,7 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 
 mod arena;
 mod engine;
+mod entities;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {

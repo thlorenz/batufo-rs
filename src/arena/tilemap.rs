@@ -25,10 +25,30 @@ pub enum Tile {
     Teleport8 = 15,
 }
 
+pub fn needs_floor_tile(tile: &Tile) -> bool {
+    match tile {
+        Tile::OutOfBounds | Tile::Wall | Tile::Hole => false,
+        Tile::Empty
+        | Tile::Player
+        | Tile::Shield
+        | Tile::Medkit
+        | Tile::Bomb
+        | Tile::Teleport1
+        | Tile::Teleport2
+        | Tile::Teleport3
+        | Tile::Teleport4
+        | Tile::Teleport5
+        | Tile::Teleport6
+        | Tile::Teleport7
+        | Tile::Teleport8 => true,
+    }
+}
+
 pub struct Tilemap {
-    tiles: Vec<Tile>,
-    nrows: u32,
-    ncols: u32,
+    pub tile_size: f32,
+    pub tiles: Vec<Tile>,
+    pub nrows: u32,
+    pub ncols: u32,
 }
 
 fn get_bounds(row: &str) -> (usize, usize) {
@@ -82,7 +102,7 @@ fn char_from_tile(tile: &Tile) -> char {
 
 impl Tilemap {
     #[allow(dead_code)]
-    pub fn new(terrain: &str) -> Result<Self, Box<dyn Error>> {
+    pub fn new(terrain: &str, tile_size: f32) -> Result<Self, Box<dyn Error>> {
         let lines: Vec<&str> = terrain
             .lines()
             .skip_while(|s| s.trim().is_empty())
@@ -112,6 +132,7 @@ impl Tilemap {
         let _start = 0;
 
         Ok(Tilemap {
+            tile_size,
             tiles,
             nrows: nrows as u32,
             ncols: ncols as u32,
@@ -149,7 +170,7 @@ Tilemap {{
 }
 
 #[cfg(test)]
-mod tilemap_tests {
+mod tests {
     use super::*;
 
     #[test]
@@ -170,7 +191,7 @@ mod tilemap_tests {
 =======================
 
 ";
-        let tilemap = Tilemap::new(terrain).expect("should produce a tilemap");
+        let tilemap = Tilemap::new(terrain, 24.0).expect("should produce a tilemap");
         print!("tilemap {:?}", tilemap);
     }
 }
