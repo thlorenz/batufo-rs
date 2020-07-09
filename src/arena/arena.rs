@@ -3,8 +3,8 @@ use crate::engine::tile_position::TilePosition;
 use std::fmt;
 
 #[derive(fmt::Debug)]
-struct Arena {
-    floor_tiles: Vec<TilePosition>,
+pub struct Arena {
+    pub floor_tiles: Vec<TilePosition>,
 }
 
 impl Arena {
