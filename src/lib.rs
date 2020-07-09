@@ -33,12 +33,12 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     println!("config {:?}", config);
 
     let image_assets = ImageAssets::new()?;
-    let asset: &ImageAsset = image_assets
+    let floor_tiles: &ImageAsset = image_assets
         .assets
         .get("floor-tiles")
         .expect("floor-tiles not loaded");
 
-    println!("floor tiles ${:?}", asset);
+    println!("floor tiles ${:?}", floor_tiles);
 
     let sdl_context: Sdl = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -46,7 +46,7 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let window: Window = build_window(&video_subsystem, &config.window_settings)?;
 
     let mut canvas = build_canvas(window)?;
-    draw_buildings(&mut canvas, &asset)?;
+    draw_buildings(&mut canvas, &floor_tiles)?;
 
     println!("starting event loop");
     start_event_loop(&sdl_context);
@@ -72,6 +72,7 @@ fn start_event_loop(sdl_context: &Sdl) {
     }
 }
 
+// TODO: draw level here
 fn draw_buildings(canvas: &mut WindowCanvas, asset: &ImageAsset) -> Result<(), Box<dyn Error>> {
     let win = canvas.window();
     let size = win.size();
