@@ -5,11 +5,17 @@ use std::fmt;
 #[derive(fmt::Debug)]
 pub struct Arena {
     pub floor_tiles: Vec<TilePosition>,
+    pub ncols: u32,
+    pub nrows: u32,
 }
 
 impl Arena {
-    pub fn new(floor_tiles: Vec<TilePosition>) -> Arena {
-        Arena { floor_tiles }
+    pub fn new(floor_tiles: Vec<TilePosition>, ncols: u32, nrows: u32) -> Arena {
+        Arena {
+            floor_tiles,
+            ncols,
+            nrows,
+        }
     }
 
     pub fn from_tilemap(tilemap: Tilemap) -> Arena {
@@ -25,7 +31,7 @@ impl Arena {
                 }
             }
         }
-        Arena::new(floor_tiles)
+        Arena::new(floor_tiles, ncols, nrows)
     }
 }
 #[cfg(test)]
