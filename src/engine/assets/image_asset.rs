@@ -25,7 +25,7 @@ impl ImageAssetConf {
     }
 }
 
-pub struct ImageAsset {
+pub struct ImageAsset<'a> {
     pub width: u32,
     pub height: u32,
     pub rows: u32,
@@ -33,14 +33,14 @@ pub struct ImageAsset {
     pub tiles: u32,
     pub item_width: u32,
     pub item_height: u32,
-    pub surface: Surface<'static>,
+    pub surface: Surface<'a>,
     // TODO: texture
     // pub texture: Texture<'static>,
     pub path: &'static str,
 }
 
 #[allow(dead_code)]
-impl ImageAsset {
+impl<'a> ImageAsset<'a> {
     fn new(asset: ImageAssetConf) -> Result<Self, Box<dyn Error>> {
         let surface = Surface::load_bmp(asset.path)?;
 
@@ -70,7 +70,7 @@ impl ImageAsset {
     }
 }
 
-impl fmt::Debug for ImageAsset {
+impl fmt::Debug for ImageAsset<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
@@ -103,12 +103,12 @@ fn load_all(
     Ok(assets)
 }
 
-pub struct ImageAssets {
-    pub assets: HashMap<&'static str, ImageAsset>,
+pub struct ImageAssets<'a> {
+    pub assets: HashMap<&'static str, ImageAsset<'a>>,
 }
 
-impl ImageAssets {
-    pub(crate) fn new() -> Result<ImageAssets, Box<dyn Error>> {
+impl<'a> ImageAssets<'a> {
+    pub(crate) fn new() -> Result<ImageAssets<'a>, Box<dyn Error>> {
         let mut asset_confs: HashMap<&'static str, ImageAssetConf> = HashMap::new();
         asset_confs.insert(
             "floor-tiles",
