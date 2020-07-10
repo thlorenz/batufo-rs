@@ -6,13 +6,13 @@ use crate::engine::assets::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use crate::engine::sprite::{PositionedSprite, Sprite};
 
-struct FloorRender<'a> {
-    floor_tiles: &'a Vec<TilePosition>,
+pub struct FloorRender {
+    floor_tiles: &'static Vec<TilePosition>,
     sprites: Vec<PositionedSprite>,
     tile_size: u32,
 }
 
-impl FloorRender<'_> {
+impl FloorRender {
     fn new(
         floor_tiles: &'static Vec<TilePosition>,
         ncols: u32,
@@ -35,7 +35,7 @@ impl FloorRender<'_> {
         texture_creator: &'static TextureCreator<WindowContext>,
         asset: &ImageAsset,
         tile_size: u32,
-    ) -> FloorRender<'static> {
+    ) -> FloorRender {
         FloorRender::new(
             &arena.floor_tiles,
             arena.ncols,
@@ -46,7 +46,15 @@ impl FloorRender<'_> {
         )
     }
 
-    pub fn render(&self) {}
+    /*
+    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+        for sprite in self.sprites.iter() {
+            sprite.render(canvas)?;
+        }
+        Ok(())
+    }
+
+     */
 }
 
 fn init_sprites(
