@@ -1,5 +1,5 @@
 use crate::engine::assets::image_asset::ImageAsset;
-use sdl2::render::TextureCreator;
+use sdl2::render::{TextureCreator, WindowCanvas};
 use sdl2::video::WindowContext;
 
 use crate::arena::arena::Arena;
@@ -21,5 +21,12 @@ impl<'a> Game<'a> {
         let floor = FloorRender::from_arena(&arena, texture_creator, floor_asset, TILE_SIZE);
 
         Ok(Game { floor, arena })
+    }
+
+    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+        canvas.clear();
+        self.floor.render(canvas)?;
+        canvas.present();
+        Ok(())
     }
 }

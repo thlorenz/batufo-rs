@@ -37,7 +37,7 @@ impl Arena {
         Arena::new(floor_tiles, ncols, nrows)
     }
 
-    fn for_level(level_name: &'static str) -> Result<Arena, Box<dyn Error>> {
+    pub fn for_level(level_name: &'static str) -> Result<Arena, Box<dyn Error>> {
         let levels = Levels::new();
         let face_off = levels
             .get_level(level_name)

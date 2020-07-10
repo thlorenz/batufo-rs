@@ -11,7 +11,9 @@ use sdl2::render::WindowCanvas;
 use sdl2::video::{Window, WindowBuildError, WindowBuilder};
 use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 
+use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
+use crate::game::Game;
 
 mod arena;
 mod engine;
@@ -38,12 +40,12 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     println!("config {:?}", config);
 
     let image_assets = ImageAssets::new()?;
-    let floor_tiles: &ImageAsset = image_assets
+    let floor_asset: &ImageAsset = image_assets
         .assets
         .get("floor-tiles")
         .expect("floor-tiles not loaded");
 
-    println!("floor tiles ${:?}", floor_tiles);
+    println!("floor tiles ${:?}", floor_asset);
 
     let sdl_context: Sdl = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -51,14 +53,18 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let window: Window = build_window(&video_subsystem, &config.window_settings)?;
 
     let mut canvas = build_canvas(window)?;
-    draw_buildings(&mut canvas, &floor_tiles)?;
+    // draw_buildings(&mut canvas, &floor_asset)?;
+
+    let arena = Arena::for_level("face off")?;
+    let texture_creator = canvas.texture_creator();
+    let game = Game::new(&arena, &texture_creator, floor_asset)?;
 
     println!("starting event loop");
-    start_event_loop(&sdl_context);
+    start_event_loop(&sdl_context, game, &mut canvas);
     Ok(())
 }
 
-fn start_event_loop(sdl_context: &Sdl) {
+fn start_event_loop(sdl_context: &Sdl, game: Game, canvas: &mut WindowCanvas) {
     let mut event_pump = sdl_context.event_pump().unwrap();
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -73,7 +79,8 @@ fn start_event_loop(sdl_context: &Sdl) {
                 _ => {}
             }
         }
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+        game.render(canvas).expect("FATAL: game render failed");
+        ::std::thread::sleep(Duration::from_millis(16));
     }
 }
 
