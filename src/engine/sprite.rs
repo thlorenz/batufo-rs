@@ -4,7 +4,7 @@ use sdl2::video::WindowContext;
 
 use crate::engine::assets::image_asset::ImageAsset;
 
-struct Sprite {
+pub struct Sprite {
     texture: Texture<'static>,
     rect: Rect,
 }
@@ -12,7 +12,7 @@ struct Sprite {
 impl Sprite {
     pub fn new(
         texture_creator: &'static TextureCreator<WindowContext>,
-        asset: ImageAsset,
+        asset: &ImageAsset,
         rect_idx: u32,
     ) -> Result<Sprite, TextureValueError> {
         let rect = asset.rect_for_idx(rect_idx);
@@ -31,5 +31,20 @@ impl Sprite {
             false,
             false,
         )
+    }
+}
+
+pub struct PositionedSprite {
+    sprite: Sprite,
+    center: Point,
+}
+
+impl PositionedSprite {
+    pub fn new(sprite: Sprite, center: Point) -> Self {
+        PositionedSprite { sprite, center }
+    }
+
+    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+        self.sprite.render(canvas, self.center)
     }
 }
