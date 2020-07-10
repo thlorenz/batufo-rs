@@ -4,11 +4,11 @@ use batufo::{Config, WindowSettings};
 
 pub fn main() {
     let window_settings = WindowSettings {
-        x: -1400,
+        x: -800,
         y: 0,
         title: "batufo",
-        width: 1400,
-        height: 1400,
+        width: 800,
+        height: 800,
         resizable: true,
     };
     let config = Config { window_settings };

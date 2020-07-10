@@ -3,7 +3,9 @@ use std::error::Error;
 use std::fmt;
 
 use sdl2::rect::Rect;
+use sdl2::render::{Texture, TextureCreator};
 use sdl2::surface::Surface;
+use sdl2::video::WindowContext;
 
 struct ImageAssetConf {
     pub width: u32,
@@ -34,15 +36,18 @@ pub struct ImageAsset<'a> {
     pub item_width: u32,
     pub item_height: u32,
     pub surface: Surface<'a>,
-    // TODO: texture
-    // pub texture: Texture<'static>,
+    pub texture: Texture<'a>,
     pub path: &'static str,
 }
 
 #[allow(dead_code)]
 impl<'a> ImageAsset<'a> {
-    fn new(asset: ImageAssetConf) -> Result<Self, Box<dyn Error>> {
+    fn new(
+        asset: ImageAssetConf,
+        texture_creator: &'a TextureCreator<WindowContext>,
+    ) -> Result<Self, Box<dyn Error>> {
         let surface = Surface::load_bmp(asset.path)?;
+        let texture = surface.as_texture(texture_creator)?;
 
         Ok(ImageAsset {
             width: asset.width,
@@ -54,6 +59,7 @@ impl<'a> ImageAsset<'a> {
             item_width: asset.width / asset.cols,
             item_height: asset.height / asset.rows,
             surface,
+            texture,
         })
     }
 
@@ -92,12 +98,13 @@ ImageAsset {{
     }
 }
 
-fn load_all(
+fn load_all<'a>(
     confs: HashMap<&'static str, ImageAssetConf>,
-) -> Result<HashMap<&'static str, ImageAsset>, Box<dyn Error>> {
+    texture_creator: &'a TextureCreator<WindowContext>,
+) -> Result<HashMap<&'static str, ImageAsset<'a>>, Box<dyn Error>> {
     let mut assets: HashMap<&'static str, ImageAsset> = HashMap::new();
     for (key, conf) in confs {
-        let asset: ImageAsset = ImageAsset::new(conf)?;
+        let asset: ImageAsset = ImageAsset::new(conf, &texture_creator)?;
         assets.insert(key, asset);
     }
     Ok(assets)
@@ -108,13 +115,15 @@ pub struct ImageAssets<'a> {
 }
 
 impl<'a> ImageAssets<'a> {
-    pub(crate) fn new() -> Result<ImageAssets<'a>, Box<dyn Error>> {
+    pub(crate) fn new(
+        texture_creator: &'a TextureCreator<WindowContext>,
+    ) -> Result<ImageAssets<'a>, Box<dyn Error>> {
         let mut asset_confs: HashMap<&'static str, ImageAssetConf> = HashMap::new();
         asset_confs.insert(
             "floor-tiles",
             ImageAssetConf::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp"),
         );
-        let assets: HashMap<&str, ImageAsset> = load_all(asset_confs).unwrap();
+        let assets: HashMap<&str, ImageAsset> = load_all(asset_confs, texture_creator).unwrap();
 
         Ok(ImageAssets { assets })
     }

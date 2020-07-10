@@ -39,7 +39,15 @@ pub struct Config {
 pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     println!("config {:?}", config);
 
-    let image_assets = ImageAssets::new()?;
+    let sdl_context: Sdl = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
+
+    let window: Window = build_window(&video_subsystem, &config.window_settings)?;
+
+    let mut canvas = build_canvas(window)?;
+    let texture_creator = canvas.texture_creator();
+
+    let image_assets = ImageAssets::new(&texture_creator)?;
     let floor_asset: &ImageAsset = image_assets
         .assets
         .get("floor-tiles")
@@ -47,17 +55,10 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
 
     println!("floor tiles ${:?}", floor_asset);
 
-    let sdl_context: Sdl = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
-
-    let window: Window = build_window(&video_subsystem, &config.window_settings)?;
-
-    let mut canvas = build_canvas(window)?;
     // draw_buildings(&mut canvas, &floor_asset)?;
 
     let arena = Arena::for_level("face off")?;
-    let texture_creator = canvas.texture_creator();
-    let game = Game::new(&arena, &texture_creator, floor_asset)?;
+    let game = Game::new(&arena, floor_asset)?;
 
     println!("starting event loop");
     start_event_loop(&sdl_context, game, &mut canvas);

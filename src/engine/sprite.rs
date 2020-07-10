@@ -1,22 +1,20 @@
 use sdl2::rect::{Point, Rect};
-use sdl2::render::{Texture, TextureCreator, TextureValueError, WindowCanvas};
-use sdl2::video::WindowContext;
+use sdl2::render::{Texture, TextureValueError, WindowCanvas};
 
 use crate::engine::assets::image_asset::ImageAsset;
 
 pub struct Sprite<'a> {
-    texture: Texture<'a>,
+    texture: &'a Texture<'a>,
     rect: Rect,
 }
 
 impl<'a> Sprite<'a> {
     pub fn new(
-        texture_creator: &'a TextureCreator<WindowContext>,
+        texture: &'a Texture<'a>,
         asset: &ImageAsset,
         rect_idx: u32,
     ) -> Result<Sprite<'a>, TextureValueError> {
         let rect = asset.rect_for_idx(rect_idx);
-        let texture = asset.surface.as_texture(texture_creator)?;
         Ok(Sprite { texture, rect })
     }
 

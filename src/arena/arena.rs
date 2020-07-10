@@ -42,7 +42,7 @@ impl Arena {
         let face_off = levels
             .get_level(level_name)
             .ok_or(format!("level not found '{}'", level_name))?;
-        let tilemap = Tilemap::new(face_off.level_string, TILE_SIZE)?;
+        let tilemap = Tilemap::new(face_off.terrain, TILE_SIZE)?;
         Ok(Arena::from_tilemap(tilemap))
     }
 }

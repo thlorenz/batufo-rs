@@ -1,5 +1,4 @@
-use sdl2::render::{TextureCreator, WindowCanvas};
-use sdl2::video::WindowContext;
+use sdl2::render::{Texture, WindowCanvas};
 
 use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::ImageAsset;
@@ -17,11 +16,15 @@ impl<'a> FloorRender<'a> {
         floor_tiles: &'a Vec<TilePosition>,
         ncols: u32,
         nrows: u32,
-        texture_creator: &'a TextureCreator<WindowContext>,
-        asset: &ImageAsset,
+        asset: &'a ImageAsset,
         tile_size: u32,
     ) -> Self {
-        let sprites = init_sprites(floor_tiles, texture_creator, asset, ncols, nrows, tile_size);
+        println!(
+            "Starting to init sprites for {} floor tiles",
+            floor_tiles.len()
+        );
+        let sprites = init_sprites(floor_tiles, &asset.texture, asset, ncols, nrows, tile_size);
+        println!("Finished to init {} sprites", sprites.len());
         FloorRender {
             floor_tiles,
             sprites,
@@ -29,17 +32,11 @@ impl<'a> FloorRender<'a> {
         }
     }
 
-    pub fn from_arena(
-        arena: &'a Arena,
-        texture_creator: &'a TextureCreator<WindowContext>,
-        asset: &'a ImageAsset,
-        tile_size: u32,
-    ) -> FloorRender<'a> {
+    pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> FloorRender<'a> {
         FloorRender::new(
             &arena.floor_tiles,
             arena.ncols,
             arena.nrows,
-            texture_creator,
             asset,
             tile_size,
         )
@@ -55,7 +52,7 @@ impl<'a> FloorRender<'a> {
 
 fn init_sprites<'a>(
     floor_tiles: &'a Vec<TilePosition>,
-    texture_creator: &'a TextureCreator<WindowContext>,
+    floor_texture: &'a Texture<'a>,
     asset: &ImageAsset,
     ncols: u32,
     nrows: u32,
@@ -70,7 +67,7 @@ fn init_sprites<'a>(
             let col = (i / nrows) % 7;
             let rect_idx = row * ncols + col;
             i = i + 1;
-            let sprite = Sprite::new(&texture_creator, &asset, rect_idx).expect(&format!(
+            let sprite = Sprite::new(&floor_texture, &asset, rect_idx).expect(&format!(
                 "unable to create floor sprite for idx {}",
                 rect_idx
             ));

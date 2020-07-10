@@ -1,6 +1,5 @@
 use crate::engine::assets::image_asset::ImageAsset;
-use sdl2::render::{TextureCreator, WindowCanvas};
-use sdl2::video::WindowContext;
+use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
 use crate::entities::floor_render::FloorRender;
@@ -13,12 +12,8 @@ pub struct Game<'a> {
 }
 
 impl<'a> Game<'a> {
-    pub fn new(
-        arena: &'a Arena,
-        texture_creator: &'a TextureCreator<WindowContext>,
-        floor_asset: &'a ImageAsset<'a>,
-    ) -> Result<Self, Box<dyn Error>> {
-        let floor = FloorRender::from_arena(&arena, texture_creator, floor_asset, TILE_SIZE);
+    pub fn new(arena: &'a Arena, floor_asset: &'a ImageAsset<'a>) -> Result<Self, Box<dyn Error>> {
+        let floor = FloorRender::from_arena(&arena, floor_asset, TILE_SIZE);
 
         Ok(Game { floor, arena })
     }
