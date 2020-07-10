@@ -123,7 +123,7 @@ fn draw_buildings(canvas: &mut WindowCanvas, asset: &ImageAsset) -> Result<(), B
 }
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
-    window.into_canvas().build()
+    window.into_canvas().accelerated().build()
 }
 
 fn build_window(
