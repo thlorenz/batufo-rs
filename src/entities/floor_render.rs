@@ -1,4 +1,4 @@
-use sdl2::render::TextureCreator;
+use sdl2::render::{TextureCreator, WindowCanvas};
 use sdl2::video::WindowContext;
 
 use crate::arena::arena::Arena;
@@ -15,13 +15,13 @@ pub struct FloorRender<'a> {
 impl<'a> FloorRender<'a> {
     fn new(
         floor_tiles: &'a Vec<TilePosition>,
-        // ncols: u32,
-        // nrows: u32,
-        // asset: &ImageAsset,
+        ncols: u32,
+        nrows: u32,
+        texture_creator: &'a TextureCreator<WindowContext>,
+        asset: &ImageAsset,
         tile_size: u32,
     ) -> Self {
-        let sprites: Vec<PositionedSprite> = Vec::new();
-        //            init_sprites(floor_tiles, texture_creator, asset, ncols, nrows, tile_size);
+        let sprites = init_sprites(floor_tiles, texture_creator, asset, ncols, nrows, tile_size);
         FloorRender {
             floor_tiles,
             sprites,
@@ -31,29 +31,26 @@ impl<'a> FloorRender<'a> {
 
     pub fn from_arena(
         arena: &'a Arena,
-        // texture_creator: &'static TextureCreator<WindowContext>,
-        // asset: &ImageAsset,
+        texture_creator: &'a TextureCreator<WindowContext>,
+        asset: &'a ImageAsset,
         tile_size: u32,
-    ) -> FloorRender {
+    ) -> FloorRender<'a> {
         FloorRender::new(
             &arena.floor_tiles,
-            // arena.ncols,
-            // arena.nrows,
-            // texture_creator,
-            // asset,
+            arena.ncols,
+            arena.nrows,
+            texture_creator,
+            asset,
             tile_size,
         )
     }
 
-    /*
     pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
         for sprite in self.sprites.iter() {
             sprite.render(canvas)?;
         }
         Ok(())
     }
-
-     */
 }
 
 fn init_sprites<'a>(
