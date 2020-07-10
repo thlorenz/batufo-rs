@@ -16,6 +16,8 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 mod arena;
 mod engine;
 mod entities;
+mod game;
+mod game_props;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {

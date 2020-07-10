@@ -23,7 +23,7 @@ pub struct Levels {
 }
 
 impl Levels {
-    pub fn new() {
+    pub fn new() -> Self {
         let mut levels: HashMap<&'static str, Level> = HashMap::new();
         let name = "face off";
         levels.insert(
@@ -33,6 +33,7 @@ impl Levels {
                 level_string: level_face_off(),
             },
         );
+        Levels { levels }
     }
     pub fn is_valid_level(&self, level_name: &'static str) -> bool {
         self.levels.contains_key(level_name)
