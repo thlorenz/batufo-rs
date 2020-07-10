@@ -8,7 +8,7 @@ use crate::engine::sprite::{PositionedSprite, Sprite};
 
 pub struct FloorRender<'a> {
     floor_tiles: &'a Vec<TilePosition>,
-    sprites: Vec<PositionedSprite>,
+    sprites: Vec<PositionedSprite<'a>>,
     tile_size: u32,
 }
 
@@ -56,14 +56,14 @@ impl<'a> FloorRender<'a> {
      */
 }
 
-fn init_sprites(
-    floor_tiles: &'static Vec<TilePosition>,
-    texture_creator: &'static TextureCreator<WindowContext>,
+fn init_sprites<'a>(
+    floor_tiles: &'a Vec<TilePosition>,
+    texture_creator: &'a TextureCreator<WindowContext>,
     asset: &ImageAsset,
     ncols: u32,
     nrows: u32,
     tile_size: u32,
-) -> Vec<PositionedSprite> {
+) -> Vec<PositionedSprite<'a>> {
     let mut i = 0;
     floor_tiles
         .iter()

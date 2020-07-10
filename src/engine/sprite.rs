@@ -4,19 +4,19 @@ use sdl2::video::WindowContext;
 
 use crate::engine::assets::image_asset::ImageAsset;
 
-pub struct Sprite {
-    texture: Texture<'static>,
+pub struct Sprite<'a> {
+    texture: Texture<'a>,
     rect: Rect,
 }
 
-impl Sprite {
+impl<'a> Sprite<'a> {
     pub fn new(
-        texture_creator: &'static TextureCreator<WindowContext>,
+        texture_creator: &'a TextureCreator<WindowContext>,
         asset: &ImageAsset,
         rect_idx: u32,
-    ) -> Result<Sprite, TextureValueError> {
+    ) -> Result<Sprite<'a>, TextureValueError> {
         let rect = asset.rect_for_idx(rect_idx);
-        let texture: Texture<'static> = asset.surface.as_texture(texture_creator)?;
+        let texture = asset.surface.as_texture(texture_creator)?;
         Ok(Sprite { texture, rect })
     }
 
@@ -34,13 +34,13 @@ impl Sprite {
     }
 }
 
-pub struct PositionedSprite {
-    sprite: Sprite,
+pub struct PositionedSprite<'a> {
+    sprite: Sprite<'a>,
     center: Point,
 }
 
-impl PositionedSprite {
-    pub fn new(sprite: Sprite, center: Point) -> Self {
+impl<'a> PositionedSprite<'a> {
+    pub fn new(sprite: Sprite<'a>, center: Point) -> Self {
         PositionedSprite { sprite, center }
     }
 
