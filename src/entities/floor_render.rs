@@ -6,23 +6,22 @@ use crate::engine::assets::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use crate::engine::sprite::{PositionedSprite, Sprite};
 
-pub struct FloorRender {
-    floor_tiles: &'static Vec<TilePosition>,
+pub struct FloorRender<'a> {
+    floor_tiles: &'a Vec<TilePosition>,
     sprites: Vec<PositionedSprite>,
     tile_size: u32,
 }
 
-impl FloorRender {
+impl<'a> FloorRender<'a> {
     fn new(
-        floor_tiles: &'static Vec<TilePosition>,
-        ncols: u32,
-        nrows: u32,
-        texture_creator: &'static TextureCreator<WindowContext>,
-        asset: &ImageAsset,
+        floor_tiles: &'a Vec<TilePosition>,
+        // ncols: u32,
+        // nrows: u32,
+        // asset: &ImageAsset,
         tile_size: u32,
     ) -> Self {
-        let sprites: Vec<PositionedSprite> =
-            init_sprites(floor_tiles, texture_creator, asset, ncols, nrows, tile_size);
+        let sprites: Vec<PositionedSprite> = Vec::new();
+        //            init_sprites(floor_tiles, texture_creator, asset, ncols, nrows, tile_size);
         FloorRender {
             floor_tiles,
             sprites,
@@ -31,17 +30,17 @@ impl FloorRender {
     }
 
     pub fn from_arena(
-        arena: &'static Arena,
-        texture_creator: &'static TextureCreator<WindowContext>,
-        asset: &ImageAsset,
+        arena: &'a Arena,
+        // texture_creator: &'static TextureCreator<WindowContext>,
+        // asset: &ImageAsset,
         tile_size: u32,
     ) -> FloorRender {
         FloorRender::new(
             &arena.floor_tiles,
-            arena.ncols,
-            arena.nrows,
-            texture_creator,
-            asset,
+            // arena.ncols,
+            // arena.nrows,
+            // texture_creator,
+            // asset,
             tile_size,
         )
     }
