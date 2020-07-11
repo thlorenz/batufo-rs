@@ -5,13 +5,13 @@ use crate::engine::assets::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use crate::engine::sprite::{PositionedSprite, Sprite};
 
-pub struct FloorRender<'a> {
+pub struct Floor<'a> {
     floor_tiles: &'a Vec<TilePosition>,
     sprites: Vec<PositionedSprite<'a>>,
     tile_size: u32,
 }
 
-impl<'a> FloorRender<'a> {
+impl<'a> Floor<'a> {
     fn new(
         floor_tiles: &'a Vec<TilePosition>,
         ncols: u32,
@@ -25,15 +25,15 @@ impl<'a> FloorRender<'a> {
         );
         let sprites = init_sprites(floor_tiles, &asset.texture, asset, ncols, nrows, tile_size);
         println!("Finished to init {} sprites", sprites.len());
-        FloorRender {
+        Floor {
             floor_tiles,
             sprites,
             tile_size,
         }
     }
 
-    pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> FloorRender<'a> {
-        FloorRender::new(
+    pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> Floor<'a> {
+        Floor::new(
             &arena.floor_tiles,
             arena.ncols,
             arena.nrows,

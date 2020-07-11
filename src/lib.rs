@@ -1,3 +1,4 @@
+#![feature(fn_traits)]
 // TODO: remove once we got things integrated
 #![allow(dead_code)]
 use std::error::Error;
