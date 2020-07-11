@@ -11,14 +11,13 @@ pub struct Sprite<'a> {
 
 impl<'a> Sprite<'a> {
     pub fn new(
-        texture: &'a Texture<'a>,
-        asset: &ImageAsset,
+        asset: &'a ImageAsset,
         render_size: u32,
         rect_idx: u32,
     ) -> Result<Sprite<'a>, TextureValueError> {
         let rect = asset.rect_for_idx(rect_idx);
         Ok(Sprite {
-            texture,
+            texture: &asset.texture,
             rect,
             render_size,
         })

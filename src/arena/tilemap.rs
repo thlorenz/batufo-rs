@@ -101,7 +101,6 @@ fn char_from_tile(tile: &Tile) -> char {
 }
 
 impl Tilemap {
-    #[allow(dead_code)]
     pub fn new(terrain: &str, tile_size: u32) -> Result<Self, Box<dyn Error>> {
         let lines: Vec<&str> = terrain
             .lines()

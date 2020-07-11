@@ -1,4 +1,4 @@
-use sdl2::render::{Texture, WindowCanvas};
+use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::ImageAsset;
@@ -17,7 +17,7 @@ impl<'a> Floor<'a> {
             "Starting to init sprites for {} floor tiles",
             floor_tiles.len()
         );
-        let sprites = init_sprites(floor_tiles, &asset.texture, asset, tile_size);
+        let sprites = init_sprites(floor_tiles, asset, tile_size);
         println!("Finished to init {} sprites", sprites.len());
         Floor {
             floor_tiles,
@@ -40,8 +40,7 @@ impl<'a> Floor<'a> {
 
 fn init_sprites<'a>(
     floor_tiles: &'a Vec<TilePosition>,
-    floor_texture: &'a Texture<'a>,
-    asset: &ImageAsset,
+    asset: &'a ImageAsset,
     tile_size: u32,
 ) -> Vec<PositionedSprite<'a>> {
     let mut i = 0;
@@ -53,7 +52,7 @@ fn init_sprites<'a>(
             let col = (i / asset.rows) % 7;
             let rect_idx = row * asset.cols + col;
             i = i + 1;
-            let sprite = Sprite::new(&floor_texture, &asset, tile_size, rect_idx).expect(&format!(
+            let sprite = Sprite::new(&asset, tile_size, rect_idx).expect(&format!(
                 "unable to create floor sprite for idx {}",
                 rect_idx
             ));
