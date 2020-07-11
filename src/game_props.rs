@@ -1,4 +1,4 @@
-pub const TILE_SIZE: u32 = 48;
+pub const TILE_SIZE: u32 = 24;
 pub const RENDER_GRID: bool = true;
 
 // Colors

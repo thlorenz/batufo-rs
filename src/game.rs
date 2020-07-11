@@ -28,7 +28,7 @@ impl<'a> Game<'a> {
         if RENDER_GRID {
             self.grid.render(canvas)?;
         }
-        // self.floor.render(canvas)?;
+        self.floor.render(canvas)?;
         canvas.present();
         Ok(())
     }

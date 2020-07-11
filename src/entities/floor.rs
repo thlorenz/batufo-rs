@@ -12,18 +12,12 @@ pub struct Floor<'a> {
 }
 
 impl<'a> Floor<'a> {
-    fn new(
-        floor_tiles: &'a Vec<TilePosition>,
-        ncols: u32,
-        nrows: u32,
-        asset: &'a ImageAsset,
-        tile_size: u32,
-    ) -> Self {
+    fn new(floor_tiles: &'a Vec<TilePosition>, asset: &'a ImageAsset, tile_size: u32) -> Self {
         println!(
             "Starting to init sprites for {} floor tiles",
             floor_tiles.len()
         );
-        let sprites = init_sprites(floor_tiles, &asset.texture, asset, ncols, nrows, tile_size);
+        let sprites = init_sprites(floor_tiles, &asset.texture, asset, tile_size);
         println!("Finished to init {} sprites", sprites.len());
         Floor {
             floor_tiles,
@@ -33,13 +27,7 @@ impl<'a> Floor<'a> {
     }
 
     pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> Floor<'a> {
-        Floor::new(
-            &arena.floor_tiles,
-            arena.ncols,
-            arena.nrows,
-            asset,
-            tile_size,
-        )
+        Floor::new(&arena.floor_tiles, asset, tile_size)
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
@@ -54,8 +42,6 @@ fn init_sprites<'a>(
     floor_tiles: &'a Vec<TilePosition>,
     floor_texture: &'a Texture<'a>,
     asset: &ImageAsset,
-    ncols: u32,
-    nrows: u32,
     tile_size: u32,
 ) -> Vec<PositionedSprite<'a>> {
     let mut i = 0;
@@ -64,10 +50,10 @@ fn init_sprites<'a>(
         .map(|tp| {
             let center = tp.to_world_point(tile_size);
             let row = i % 7;
-            let col = (i / nrows) % 7;
-            let rect_idx = row * ncols + col;
+            let col = (i / asset.rows) % 7;
+            let rect_idx = row * asset.cols + col;
             i = i + 1;
-            let sprite = Sprite::new(&floor_texture, &asset, rect_idx).expect(&format!(
+            let sprite = Sprite::new(&floor_texture, &asset, tile_size, rect_idx).expect(&format!(
                 "unable to create floor sprite for idx {}",
                 rect_idx
             ));

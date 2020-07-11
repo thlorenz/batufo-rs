@@ -7,7 +7,6 @@ use std::time::Duration;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::rect::Rect;
 use sdl2::render::WindowCanvas;
 use sdl2::video::{Window, WindowBuildError, WindowBuilder};
 use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
@@ -56,8 +55,7 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
 
     println!("floor tiles ${:?}", floor_asset);
 
-    // draw_buildings(&mut canvas, &floor_asset)?;
-
+    // let arena = Arena::for_level("mini")?;
     let arena = Arena::for_level("face off")?;
     let game = Game::new(&arena, floor_asset)?;
 
@@ -84,43 +82,6 @@ fn start_event_loop(sdl_context: &Sdl, game: Game, canvas: &mut WindowCanvas) {
         game.render(canvas).expect("FATAL: game render failed");
         ::std::thread::sleep(Duration::from_millis(16));
     }
-}
-
-// TODO: draw level here
-fn draw_buildings(canvas: &mut WindowCanvas, asset: &ImageAsset) -> Result<(), Box<dyn Error>> {
-    let win = canvas.window();
-    let size = win.size();
-    let rows: u32 = size.1 / asset.item_height + 1;
-    let cols: u32 = size.0 / asset.item_width + 1;
-    let texture_creator = canvas.texture_creator();
-    let texture = asset.surface.as_texture(&texture_creator)?;
-
-    canvas.clear();
-    let mut idx: u32 = 0;
-    for row in 0..rows {
-        for col in 0..cols {
-            idx += 1;
-            if idx >= asset.tiles {
-                idx = 0;
-            }
-            let src_rect = asset.rect_for_idx(idx);
-            let x = col * asset.item_width;
-            let y = row * asset.item_height;
-            let dst_rect = Rect::new(x as i32, y as i32, asset.item_width, asset.item_height);
-            canvas.copy_ex(
-                &texture,
-                Some(src_rect),
-                Some(dst_rect),
-                0.0,
-                None,
-                false,
-                false,
-            )?;
-        }
-    }
-    canvas.present();
-
-    Ok(())
 }
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
