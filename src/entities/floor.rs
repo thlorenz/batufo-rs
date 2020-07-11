@@ -13,12 +13,7 @@ pub struct Floor<'a> {
 
 impl<'a> Floor<'a> {
     fn new(floor_tiles: &'a Vec<TilePosition>, asset: &'a ImageAsset, tile_size: u32) -> Self {
-        println!(
-            "Starting to init sprites for {} floor tiles",
-            floor_tiles.len()
-        );
         let sprites = init_sprites(floor_tiles, asset, tile_size);
-        println!("Finished to init {} sprites", sprites.len());
         Floor {
             floor_tiles,
             sprites,

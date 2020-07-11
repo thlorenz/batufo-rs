@@ -118,13 +118,23 @@ impl<'a> ImageAssets<'a> {
     pub(crate) fn new(
         texture_creator: &'a TextureCreator<WindowContext>,
     ) -> Result<ImageAssets<'a>, Box<dyn Error>> {
+        // TODO: this can't live in the engine, at least the confs need to be created elsewhere
         let mut asset_confs: HashMap<&'static str, ImageAssetConf> = HashMap::new();
         asset_confs.insert(
             "floor-tiles",
             ImageAssetConf::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp"),
         );
+        asset_confs.insert(
+            "wall-metal",
+            ImageAssetConf::new(66, 66, 1, 1, "assets/images/bg/wall-metal.bmp"),
+        );
         let assets: HashMap<&str, ImageAsset> = load_all(asset_confs, texture_creator).unwrap();
 
         Ok(ImageAssets { assets })
+    }
+    pub fn get(&self, name: &'static str) -> Result<&ImageAsset, String> {
+        self.assets
+            .get(name)
+            .ok_or(format!("asset {} not loaded", name))
     }
 }

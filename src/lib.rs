@@ -48,16 +48,12 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let texture_creator = canvas.texture_creator();
 
     let image_assets = ImageAssets::new(&texture_creator)?;
-    let floor_asset: &ImageAsset = image_assets
-        .assets
-        .get("floor-tiles")
-        .expect("floor-tiles not loaded");
-
-    println!("floor tiles ${:?}", floor_asset);
+    let floor_asset: &ImageAsset = image_assets.get("floor-tiles")?;
+    let wall_asset: &ImageAsset = image_assets.get("wall-metal")?;
 
     // let arena = Arena::for_level("mini")?;
     let arena = Arena::for_level("face off")?;
-    let game = Game::new(&arena, floor_asset)?;
+    let game = Game::new(&arena, floor_asset, wall_asset)?;
 
     println!("starting event loop");
     start_event_loop(&sdl_context, game, &mut canvas);

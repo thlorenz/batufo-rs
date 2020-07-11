@@ -1,5 +1,5 @@
 use crate::arena::levels::Levels;
-use crate::arena::tilemap::{needs_floor_tile, Tilemap};
+use crate::arena::tilemap::{needs_floor_tile, Tile, Tilemap};
 use crate::engine::position::TilePosition;
 use crate::game_props::TILE_SIZE;
 use std::error::Error;
@@ -8,14 +8,21 @@ use std::fmt;
 #[derive(fmt::Debug)]
 pub struct Arena {
     pub floor_tiles: Vec<TilePosition>,
+    pub walls: Vec<TilePosition>,
     pub ncols: u32,
     pub nrows: u32,
 }
 
 impl Arena {
-    pub fn new(floor_tiles: Vec<TilePosition>, ncols: u32, nrows: u32) -> Arena {
+    pub fn new(
+        floor_tiles: Vec<TilePosition>,
+        walls: Vec<TilePosition>,
+        ncols: u32,
+        nrows: u32,
+    ) -> Arena {
         Arena {
             floor_tiles,
+            walls,
             ncols,
             nrows,
         }
@@ -25,6 +32,7 @@ impl Arena {
         let nrows = tilemap.nrows;
         let ncols = tilemap.ncols;
         let mut floor_tiles: Vec<TilePosition> = Vec::new();
+        let mut walls: Vec<TilePosition> = Vec::new();
         for row in 0..nrows {
             for col in 0..ncols {
                 let idx: usize = (row * ncols + col) as usize;
@@ -32,9 +40,27 @@ impl Arena {
                 if needs_floor_tile(tile) {
                     floor_tiles.push(TilePosition::centered(col, row, tilemap.tile_size))
                 }
+                match tile {
+                    Tile::OutOfBounds => {}
+                    Tile::Empty => {}
+                    Tile::Hole => {}
+                    Tile::Wall => walls.push(TilePosition::centered(col, row, tilemap.tile_size)),
+                    Tile::Player => {}
+                    Tile::Medkit => {}
+                    Tile::Shield => {}
+                    Tile::Bomb => {}
+                    Tile::Teleport1 => {}
+                    Tile::Teleport2 => {}
+                    Tile::Teleport3 => {}
+                    Tile::Teleport4 => {}
+                    Tile::Teleport5 => {}
+                    Tile::Teleport6 => {}
+                    Tile::Teleport7 => {}
+                    Tile::Teleport8 => {}
+                }
             }
         }
-        Arena::new(floor_tiles, ncols, nrows)
+        Arena::new(floor_tiles, walls, ncols, nrows)
     }
 
     pub fn for_level(level_name: &'static str) -> Result<Arena, Box<dyn Error>> {

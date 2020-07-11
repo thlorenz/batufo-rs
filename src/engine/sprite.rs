@@ -23,17 +23,13 @@ impl<'a> Sprite<'a> {
         })
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas, center: Point) -> Result<(), String> {
+    pub fn render(&self, canvas: &mut WindowCanvas, rect: Rect) -> Result<(), String> {
+        canvas.copy(&self.texture, Some(self.rect), Some(rect))
+    }
+
+    pub fn render_centered(&self, canvas: &mut WindowCanvas, center: Point) -> Result<(), String> {
         let rect = Rect::from_center(center, self.render_size, self.render_size);
-        canvas.copy_ex(
-            &self.texture,
-            Some(self.rect),
-            Some(rect),
-            0.0,
-            None,
-            false,
-            false,
-        )
+        self.render(canvas, rect)
     }
 }
 
@@ -48,6 +44,6 @@ impl<'a> PositionedSprite<'a> {
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
-        self.sprite.render(canvas, self.center)
+        self.sprite.render_centered(canvas, self.center)
     }
 }
