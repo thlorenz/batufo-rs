@@ -4,7 +4,6 @@
 
 use std::error::Error;
 use std::fmt;
-use std::time::{SystemTime, SystemTimeError};
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -15,6 +14,7 @@ use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
+use crate::game_props::{RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
 
 mod arena;
@@ -63,17 +63,27 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+// See: https://github.com/tsoding/something/blob/c3bf0545aaaf93aa8f88cb4254576587a0e0af74/src/something_main.cpp#L158
 fn start_event_loop(
     sdl_context: &Sdl,
     game: &mut Game,
     canvas: &mut WindowCanvas,
-) -> Result<(), SystemTimeError> {
+) -> Result<(), String> {
     let mut input = Input::new();
     let mut event_pump = sdl_context.event_pump().unwrap();
-    let mut ts = SystemTime::now();
+    let mut timer = sdl_context.timer()?;
+
+    let mut prev_ticks = timer.ticks();
     'running: loop {
-        let dt = ts.elapsed()?.as_millis();
-        ts = SystemTime::now();
+        // Ensure we don't work more than needed for frame rate
+        // WARN: timer docs recommend other way to keep track of time
+        let dt = timer.ticks() - prev_ticks;
+        if dt < TIME_PER_FRAME_MS {
+            timer.delay(TIME_PER_FRAME_MS - dt - 1);
+        }
+        let curr_ticks = timer.ticks();
+        let dt = curr_ticks - prev_ticks;
+        prev_ticks = curr_ticks;
 
         input.clear();
         for event in event_pump.poll_iter() {
@@ -102,14 +112,20 @@ fn start_event_loop(
                 _ => {}
             }
         }
+
         game.update(dt, &input);
         game.render(canvas).expect("FATAL: game render failed");
     }
+
     Ok(())
 }
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
-    window.into_canvas().accelerated().build()
+    if RENDER_GPU_ACCELERATED {
+        window.into_canvas().accelerated().build()
+    } else {
+        window.into_canvas().software().build()
+    }
 }
 
 fn build_window(
@@ -117,7 +133,7 @@ fn build_window(
     w: &WindowSettings,
 ) -> Result<Window, WindowBuildError> {
     let mut builder: WindowBuilder = video_subsystem.window(w.title, w.width, w.height);
-    builder.position(w.x, w.y);
+    builder.position(w.x, w.y).opengl();
 
     if w.resizable {
         builder.resizable();

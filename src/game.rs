@@ -39,7 +39,7 @@ impl<'a> Game<'a> {
         })
     }
 
-    pub fn update(&mut self, dt: u128, input: &Input) {
+    pub fn update(&mut self, dt: u32, input: &Input) {
         // TODO: player controller would run here, update his position and then cameras accordingly
         let len = dt as i32;
         if input.has_up() {
