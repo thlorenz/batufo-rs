@@ -122,11 +122,11 @@ impl<'a> ImageAssets<'a> {
         let mut asset_confs: HashMap<&'static str, ImageAssetConf> = HashMap::new();
         asset_confs.insert(
             "floor-tiles",
-            ImageAssetConf::new(1024, 1024, 8, 8, "assets/images/bg/floor-tiles.bmp"),
+            ImageAssetConf::new(384, 384, 8, 8, "assets/images/bg/floor-tiles.bmp"),
         );
         asset_confs.insert(
             "wall-metal",
-            ImageAssetConf::new(66, 66, 1, 1, "assets/images/bg/wall-metal.bmp"),
+            ImageAssetConf::new(48, 48, 1, 1, "assets/images/bg/wall-metal.bmp"),
         );
         let assets: HashMap<&str, ImageAsset> = load_all(asset_confs, texture_creator).unwrap();
 
