@@ -15,7 +15,7 @@ use crate::arena::arena::Arena;
 use crate::data::diagnostics::Diagnostic;
 use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
-use crate::game_props::{RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
+use crate::game_props::{MIN_TIME_PER_FRAME_MS, RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
 use entities::text::Text;
 use sdl2::ttf::FontStyle;
@@ -96,8 +96,8 @@ fn start_event_loop(
     let mut rendered_ts: u32 = started_ts;
     'running: loop {
         let dt = timer.ticks() - started_ts;
-        if dt < TIME_PER_FRAME_MS {
-            timer.delay(TIME_PER_FRAME_MS - dt - 1);
+        if dt < MIN_TIME_PER_FRAME_MS {
+            timer.delay(MIN_TIME_PER_FRAME_MS - dt);
         }
         let ts = timer.ticks();
         let dt = ts - started_ts;
