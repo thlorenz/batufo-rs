@@ -16,6 +16,7 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
 use crate::game_props::{RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
+use crate::models::diagnostics::Diagnostics;
 use entities::text::Text;
 use sdl2::ttf::FontStyle;
 use std::path::Path;
@@ -26,6 +27,7 @@ mod entities;
 mod game;
 mod game_props;
 mod inputs;
+mod models;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {
@@ -88,17 +90,27 @@ fn start_event_loop(
     let mut event_pump = sdl_context.event_pump().unwrap();
     let mut timer = sdl_context.timer()?;
 
-    let mut prev_ticks = timer.ticks();
+    let mut started_ts = timer.ticks();
+    let mut polled_ts: u32 = started_ts;
+    let mut updated_ts: u32 = started_ts;
+    let mut rendered_ts: u32 = started_ts;
     'running: loop {
-        // Ensure we don't work more than needed for frame rate
-        // WARN: timer docs recommend other way to keep track of time
-        let dt = timer.ticks() - prev_ticks;
+        let dt = timer.ticks() - started_ts;
         if dt < TIME_PER_FRAME_MS {
             timer.delay(TIME_PER_FRAME_MS - dt - 1);
         }
-        let curr_ticks = timer.ticks();
-        let dt = curr_ticks - prev_ticks;
-        prev_ticks = curr_ticks;
+        let ts = timer.ticks();
+        let dt = ts - started_ts;
+
+        let diagnostics = Diagnostics::new(
+            TIME_PER_FRAME_MS,
+            polled_ts - started_ts,
+            updated_ts - polled_ts,
+            rendered_ts - updated_ts,
+            dt,
+        );
+
+        started_ts = ts;
 
         input.clear();
         for event in event_pump.poll_iter() {
@@ -127,9 +139,11 @@ fn start_event_loop(
                 _ => {}
             }
         }
-
-        game.update(dt, &input);
+        polled_ts = timer.ticks();
+        game.update(dt, &input, diagnostics);
+        updated_ts = timer.ticks();
         game.render(canvas).expect("FATAL: game render failed");
+        rendered_ts = timer.ticks();
     }
 
     Ok(())
