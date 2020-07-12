@@ -2,6 +2,7 @@ use crate::engine::assets::image_asset::ImageAsset;
 use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
+use crate::entities::diag_hud::DiagHud;
 use crate::entities::floor::Floor;
 use crate::entities::grid::Grid;
 use crate::entities::text::{FontBlend, Text};
@@ -17,6 +18,7 @@ pub struct Game<'a> {
     floor: Floor<'a>,
     grid: Grid,
     walls: Walls<'a>,
+    diag_hud: DiagHud,
     diag_text: Text<'a>,
 
     camera_platform: Point,
@@ -32,6 +34,7 @@ impl<'a> Game<'a> {
         let floor = Floor::from_arena(&arena, floor_asset, TILE_SIZE);
         let grid = Grid::new(arena.ncols, arena.nrows, TILE_SIZE);
         let walls = Walls::new(&arena.walls, wall_asset, TILE_SIZE);
+        let diag_hud = DiagHud::new(Point::new(0, 0));
 
         let camera_platform = Point::new(0, 0);
         Ok(Game {
@@ -39,6 +42,7 @@ impl<'a> Game<'a> {
             walls,
             arena,
             grid,
+            diag_hud,
             diag_text,
             camera_platform,
         })
@@ -69,6 +73,7 @@ impl<'a> Game<'a> {
         }
         self.floor.render(canvas, &self.camera_platform)?;
         self.walls.render(canvas, &self.camera_platform)?;
+        self.diag_hud.render(canvas)?;
         self.diag_text.render(
             canvas,
             Point::new(10, 10),

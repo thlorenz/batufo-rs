@@ -7,7 +7,7 @@ use std::fmt;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::render::WindowCanvas;
+use sdl2::render::{BlendMode, WindowCanvas};
 use sdl2::video::{Window, WindowBuildError, WindowBuilder};
 use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 
@@ -51,6 +51,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let window: Window = build_window(&video_subsystem, &config.window_settings)?;
 
     let mut canvas = build_canvas(window)?;
+    canvas.set_blend_mode(BlendMode::Blend);
+
     let texture_creator = canvas.texture_creator();
 
     let image_assets = ImageAssets::new(&texture_creator)?;
