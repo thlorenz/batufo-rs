@@ -2,8 +2,8 @@ use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::WindowCanvas;
 
+use crate::data::diagnostics::Diagnostic;
 use crate::entities::text::{FontBlend, Text};
-use crate::models::diagnostics::Diagnostics;
 use std::error::Error;
 
 pub struct DiagHud<'a> {
@@ -29,7 +29,7 @@ impl<'a> DiagHud<'a> {
     pub fn render(
         &self,
         canvas: &mut WindowCanvas,
-        diagnostics: &Diagnostics,
+        diagnostics: &Diagnostic,
     ) -> Result<(), Box<dyn Error>> {
         let (width, _) = canvas.window().size();
         let rect = Rect::new(self.position.x, self.position.y, width, self.height);
@@ -38,8 +38,9 @@ impl<'a> DiagHud<'a> {
         canvas.fill_rect(rect)?;
 
         let stats: String = format!(
-            "fps: {fps} poll: {calc}ms calc: {calc}ms rndr: {rndr}ms tot: {tot} rem: {rem} ",
+            "fps: {fps} (P:{poll:02} U:{calc:02} R:{rndr:02}) -> {tot:02}ms +{rem:02}ms",
             fps = diagnostics.frame_rate,
+            poll = diagnostics.time_spent_polling_ms,
             calc = diagnostics.time_spent_udpating_ms,
             rndr = diagnostics.time_spent_rendering_ms,
             tot = diagnostics.time_spent_total_ms,

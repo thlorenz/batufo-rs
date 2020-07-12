@@ -12,22 +12,22 @@ use sdl2::video::{Window, WindowBuildError, WindowBuilder};
 use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 
 use crate::arena::arena::Arena;
+use crate::data::diagnostics::Diagnostic;
 use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
 use crate::game_props::{RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
-use crate::models::diagnostics::Diagnostics;
 use entities::text::Text;
 use sdl2::ttf::FontStyle;
 use std::path::Path;
 
 mod arena;
+mod data;
 mod engine;
 mod entities;
 mod game;
 mod game_props;
 mod inputs;
-mod models;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {
@@ -102,7 +102,7 @@ fn start_event_loop(
         let ts = timer.ticks();
         let dt = ts - started_ts;
 
-        let diagnostics = Diagnostics::new(
+        let diagnostics = Diagnostic::new(
             TIME_PER_FRAME_MS,
             polled_ts - started_ts,
             updated_ts - polled_ts,

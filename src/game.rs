@@ -2,6 +2,7 @@ use crate::engine::assets::image_asset::ImageAsset;
 use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
+use crate::data::diagnostics::{Diagnostic, Diagnostics};
 use crate::entities::diag_hud::DiagHud;
 use crate::entities::floor::Floor;
 use crate::entities::grid::Grid;
@@ -9,7 +10,6 @@ use crate::entities::text::Text;
 use crate::entities::walls::Walls;
 use crate::game_props::{ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
 use crate::inputs::input::Input;
-use crate::models::diagnostics::Diagnostics;
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
 use std::error::Error;
@@ -48,12 +48,12 @@ impl<'a> Game<'a> {
             grid,
             walls,
             diag_hud,
-            diagnostics: Diagnostics::empty(),
+            diagnostics: Diagnostics::new(),
             camera_platform,
         })
     }
 
-    pub fn update(&mut self, dt: u32, input: &Input, diagnostics: Diagnostics) {
+    pub fn update(&mut self, dt: u32, input: &Input, diagnostics: Diagnostic) {
         // TODO: player controller would run here, update his position and then cameras accordingly
         let len = dt as i32;
         if input.has_up() {
@@ -68,7 +68,7 @@ impl<'a> Game<'a> {
         if input.has_right() {
             self.camera_platform = self.camera_platform.offset(len, 0);
         }
-        self.diagnostics = diagnostics;
+        self.diagnostics.update(diagnostics);
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), Box<dyn Error>> {
@@ -79,7 +79,7 @@ impl<'a> Game<'a> {
         }
         self.floor.render(canvas, &self.camera_platform)?;
         self.walls.render(canvas, &self.camera_platform)?;
-        self.diag_hud.render(canvas, &self.diagnostics)?;
+        self.diag_hud.render(canvas, &self.diagnostics.current())?;
         canvas.present();
         Ok(())
     }

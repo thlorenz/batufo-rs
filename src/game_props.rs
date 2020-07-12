@@ -7,3 +7,6 @@ pub const TIME_PER_FRAME_MS: u32 = 1000 / FRAME_RATE;
 
 // Colors
 pub const ANTIQUE_WHITE: (u8, u8, u8) = (0xfa, 0xeb, 0xd7);
+
+// Debug
+pub const DIAGNOSTICS_COUNT: usize = (FRAME_RATE / 5) as usize;
