@@ -30,6 +30,11 @@ impl Levels {
             "face off",
             builtins::face_off::level_face_off(),
         );
+        add_level(
+            &mut levels,
+            "practice arena",
+            builtins::practice_arena::level_practice_arena(),
+        );
         add_level(&mut levels, "mini", builtins::mini::level_mini());
         Levels { levels }
     }

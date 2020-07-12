@@ -55,7 +55,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let wall_asset: &ImageAsset = image_assets.get("wall-metal")?;
 
     // let arena = Arena::for_level("mini")?;
-    let arena = Arena::for_level("face off")?;
+    let arena = Arena::for_level("practice arena")?;
+    // let arena = Arena::for_level("face off")?;
     let mut game = Game::new(&arena, floor_asset, wall_asset)?;
 
     println!("starting event loop");
