@@ -4,7 +4,7 @@
 
 use std::error::Error;
 use std::fmt;
-use std::time::Duration;
+use std::time::{SystemTime, SystemTimeError};
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -59,14 +59,22 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut game = Game::new(&arena, floor_asset, wall_asset)?;
 
     println!("starting event loop");
-    start_event_loop(&sdl_context, &mut game, &mut canvas);
+    start_event_loop(&sdl_context, &mut game, &mut canvas)?;
     Ok(())
 }
 
-fn start_event_loop(sdl_context: &Sdl, game: &mut Game, canvas: &mut WindowCanvas) {
+fn start_event_loop(
+    sdl_context: &Sdl,
+    game: &mut Game,
+    canvas: &mut WindowCanvas,
+) -> Result<(), SystemTimeError> {
     let mut input = Input::new();
     let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut ts = SystemTime::now();
     'running: loop {
+        let dt = ts.elapsed()?.as_millis();
+        ts = SystemTime::now();
+
         input.clear();
         for event in event_pump.poll_iter() {
             match event {
@@ -74,9 +82,7 @@ fn start_event_loop(sdl_context: &Sdl, game: &mut Game, canvas: &mut WindowCanva
                 | Event::KeyDown {
                     keycode: Some(Keycode::Escape),
                     ..
-                } => {
-                    break 'running;
-                }
+                } => break 'running,
                 Event::KeyDown {
                     keycode: Some(Keycode::A),
                     ..
@@ -96,10 +102,10 @@ fn start_event_loop(sdl_context: &Sdl, game: &mut Game, canvas: &mut WindowCanva
                 _ => {}
             }
         }
-        game.update(&input);
+        game.update(dt, &input);
         game.render(canvas).expect("FATAL: game render failed");
-        ::std::thread::sleep(Duration::from_millis(16));
     }
+    Ok(())
 }
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
