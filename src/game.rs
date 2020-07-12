@@ -4,6 +4,7 @@ use sdl2::render::WindowCanvas;
 use crate::arena::arena::Arena;
 use crate::entities::floor::Floor;
 use crate::entities::grid::Grid;
+use crate::entities::text::{FontBlend, Text};
 use crate::entities::walls::Walls;
 use crate::game_props::{ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
 use crate::inputs::input::Input;
@@ -16,6 +17,8 @@ pub struct Game<'a> {
     floor: Floor<'a>,
     grid: Grid,
     walls: Walls<'a>,
+    diag_text: Text<'a>,
+
     camera_platform: Point,
 }
 
@@ -24,6 +27,7 @@ impl<'a> Game<'a> {
         arena: &'a Arena,
         floor_asset: &'a ImageAsset<'a>,
         wall_asset: &'a ImageAsset<'a>,
+        diag_text: Text<'a>,
     ) -> Result<Self, Box<dyn Error>> {
         let floor = Floor::from_arena(&arena, floor_asset, TILE_SIZE);
         let grid = Grid::new(arena.ncols, arena.nrows, TILE_SIZE);
@@ -35,6 +39,7 @@ impl<'a> Game<'a> {
             walls,
             arena,
             grid,
+            diag_text,
             camera_platform,
         })
     }
@@ -56,7 +61,7 @@ impl<'a> Game<'a> {
         }
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), Box<dyn Error>> {
         canvas.set_draw_color(Color::RGB.call(ANTIQUE_WHITE));
         canvas.clear();
         if RENDER_GRID {
@@ -64,6 +69,13 @@ impl<'a> Game<'a> {
         }
         self.floor.render(canvas, &self.camera_platform)?;
         self.walls.render(canvas, &self.camera_platform)?;
+        self.diag_text.render(
+            canvas,
+            Point::new(10, 10),
+            "hello world",
+            Color::WHITE,
+            FontBlend::Blended,
+        )?;
         canvas.present();
         Ok(())
     }

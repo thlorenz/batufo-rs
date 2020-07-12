@@ -16,6 +16,9 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
 use crate::game_props::{RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
+use entities::text::Text;
+use sdl2::ttf::FontStyle;
+use std::path::Path;
 
 mod arena;
 mod engine;
@@ -54,10 +57,19 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let floor_asset: &ImageAsset = image_assets.get("floor-tiles")?;
     let wall_asset: &ImageAsset = image_assets.get("wall-metal")?;
 
+    let ttf_context = sdl2::ttf::init()?;
+    let diag_text = Text::new(
+        &ttf_context,
+        &texture_creator,
+        Path::new("assets/fonts/Inconsolata.ttf"),
+        24,
+        FontStyle::NORMAL,
+    )?;
+
     // let arena = Arena::for_level("mini")?;
     let arena = Arena::for_level("practice arena")?;
     // let arena = Arena::for_level("face off")?;
-    let mut game = Game::new(&arena, floor_asset, wall_asset)?;
+    let mut game = Game::new(&arena, floor_asset, wall_asset, diag_text)?;
 
     println!("starting event loop");
     start_event_loop(&sdl_context, &mut game, &mut canvas)?;

@@ -5,4 +5,6 @@ authors = ["Thorsten Lorenz <thlorenz@gmx.de>"]
 edition = "2018"
 
 [dependencies]
-sdl2 = "0.34.2"
+[dependencies.sdl2]
+features = ["ttf"]
+version="0.34.2"
