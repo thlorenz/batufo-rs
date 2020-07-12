@@ -1,6 +1,7 @@
 #![feature(fn_traits)]
 // TODO: remove once we got things integrated
 #![allow(dead_code)]
+
 use std::error::Error;
 use std::fmt;
 use std::time::Duration;
@@ -14,12 +15,14 @@ use sdl2::{IntegerOrSdlError, Sdl, VideoSubsystem};
 use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
+use crate::inputs::input::Input;
 
 mod arena;
 mod engine;
 mod entities;
 mod game;
 mod game_props;
+mod inputs;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {
@@ -53,16 +56,18 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
 
     // let arena = Arena::for_level("mini")?;
     let arena = Arena::for_level("face off")?;
-    let game = Game::new(&arena, floor_asset, wall_asset)?;
+    let mut game = Game::new(&arena, floor_asset, wall_asset)?;
 
     println!("starting event loop");
-    start_event_loop(&sdl_context, game, &mut canvas);
+    start_event_loop(&sdl_context, &mut game, &mut canvas);
     Ok(())
 }
 
-fn start_event_loop(sdl_context: &Sdl, game: Game, canvas: &mut WindowCanvas) {
+fn start_event_loop(sdl_context: &Sdl, game: &mut Game, canvas: &mut WindowCanvas) {
+    let mut input = Input::new();
     let mut event_pump = sdl_context.event_pump().unwrap();
     'running: loop {
+        input.clear();
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }
@@ -72,9 +77,26 @@ fn start_event_loop(sdl_context: &Sdl, game: Game, canvas: &mut WindowCanvas) {
                 } => {
                     break 'running;
                 }
+                Event::KeyDown {
+                    keycode: Some(Keycode::A),
+                    ..
+                } => input.left(),
+                Event::KeyDown {
+                    keycode: Some(Keycode::D),
+                    ..
+                } => input.right(),
+                Event::KeyDown {
+                    keycode: Some(Keycode::W),
+                    ..
+                } => input.up(),
+                Event::KeyDown {
+                    keycode: Some(Keycode::S),
+                    ..
+                } => input.down(),
                 _ => {}
             }
         }
+        game.update(&input);
         game.render(canvas).expect("FATAL: game render failed");
         ::std::thread::sleep(Duration::from_millis(16));
     }

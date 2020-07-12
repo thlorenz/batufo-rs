@@ -43,7 +43,8 @@ impl<'a> PositionedSprite<'a> {
         PositionedSprite { sprite, center }
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
-        self.sprite.render_centered(canvas, self.center)
+    pub fn render(&self, canvas: &mut WindowCanvas, origin: &Point) -> Result<(), String> {
+        let center = self.center + *origin;
+        self.sprite.render_centered(canvas, center)
     }
 }

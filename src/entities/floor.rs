@@ -4,6 +4,7 @@ use crate::arena::arena::Arena;
 use crate::engine::assets::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use crate::engine::sprite::{PositionedSprite, Sprite};
+use sdl2::rect::Point;
 
 pub struct Floor<'a> {
     floor_tiles: &'a Vec<TilePosition>,
@@ -25,9 +26,9 @@ impl<'a> Floor<'a> {
         Floor::new(&arena.floor_tiles, asset, tile_size)
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+    pub fn render(&self, canvas: &mut WindowCanvas, camera: &Point) -> Result<(), String> {
         for sprite in self.sprites.iter() {
-            sprite.render(canvas)?;
+            sprite.render(canvas, camera)?;
         }
         Ok(())
     }

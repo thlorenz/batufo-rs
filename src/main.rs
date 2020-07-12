@@ -15,7 +15,7 @@ pub fn main() {
 #[allow(dead_code)]
 fn large_window() -> WindowSettings {
     WindowSettings {
-        x: -1200,
+        x: -2410,
         y: 0,
         title: "batufo",
         width: 1200,
