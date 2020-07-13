@@ -16,8 +16,8 @@ pub struct DiagHud<'a> {
 
 impl<'a> DiagHud<'a> {
     pub fn new(position: Point, stats_text: Text<'a>) -> DiagHud {
-        let background_color = Color::RGBA(0, 0, 0, 0xaa);
-        let height = 40;
+        let background_color = Color::RGBA(0, 0, 0, 0xcc);
+        let height = 20;
         DiagHud {
             position,
             background_color,
@@ -38,7 +38,7 @@ impl<'a> DiagHud<'a> {
         canvas.fill_rect(rect)?;
 
         let stats: String = format!(
-            "fps: {fps} (P:{poll:02} U:{calc:02} R:{rndr:02}) -> {tot:02}ms +{rem:02}ms",
+            "FPS: {fps} (P:{poll:02} U:{calc:02} R:{rndr:02}) -> {tot:02}ms +{rem:02}ms",
             fps = diagnostics.frame_rate,
             poll = diagnostics.time_spent_polling_ms,
             calc = diagnostics.time_spent_udpating_ms,
@@ -49,7 +49,7 @@ impl<'a> DiagHud<'a> {
 
         self.stats_text.render(
             canvas,
-            Point::new(10, 10),
+            Point::new(10, 0),
             &stats,
             Color::WHITE,
             FontBlend::Blended,

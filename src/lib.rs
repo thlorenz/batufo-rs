@@ -65,8 +65,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     let diag_text = Text::new(
         &ttf_context,
         &texture_creator,
-        Path::new("assets/fonts/Inconsolata.ttf"),
-        24,
+        Path::new("assets/fonts/RobotoMono.ttf"),
+        14,
         FontStyle::NORMAL,
     )?;
 
