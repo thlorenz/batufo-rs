@@ -3,11 +3,14 @@ use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
 use crate::data::diagnostics::{Diagnostic, Diagnostics};
-use crate::game_props::{ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
+use crate::data::player::Player;
+use crate::engine::position::TilePosition;
+use crate::game_props::{AMBER_ACCENT, ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
 use crate::inputs::input::Input;
 use crate::views::diag_hud::DiagHud;
 use crate::views::floor_view::FloorView;
 use crate::views::grid_view::GridView;
+use crate::views::player_view::PlayerView;
 use crate::views::text::Text;
 use crate::views::walls_view::WallsView;
 use sdl2::pixels::Color;
@@ -15,15 +18,17 @@ use sdl2::rect::Point;
 use std::error::Error;
 
 pub struct Game<'a> {
-    // renderers
+    // views
     arena: &'a Arena,
     floor: FloorView<'a>,
     grid: GridView,
     walls: WallsView<'a>,
     diag_hud: DiagHud<'a>,
+    player_view: PlayerView,
 
-    // models
+    // data
     diagnostics: Diagnostics,
+    player: Player,
 
     // cameras
     camera_platform: Point,
@@ -36,11 +41,19 @@ impl<'a> Game<'a> {
         wall_asset: &'a ImageAsset<'a>,
         stats_text: Text<'a>,
     ) -> Result<Self, Box<dyn Error>> {
+        // views
         let floor = FloorView::from_arena(&arena, floor_asset, TILE_SIZE);
         let grid = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
         let walls = WallsView::new(&arena.walls, wall_asset, TILE_SIZE);
         let diag_hud = DiagHud::new(Point::new(0, 0), stats_text);
+        let player_view = PlayerView::new(Color::RGB.call(AMBER_ACCENT));
 
+        // data
+        // TODO: get player tile position from arena
+        let hw: i32 = (TILE_SIZE / 2) as i32;
+        let player = Player::new(&TilePosition::new(3, 2, hw, hw));
+
+        // cameras
         let camera_platform = Point::new(0, 0);
         Ok(Game {
             arena,
@@ -48,26 +61,16 @@ impl<'a> Game<'a> {
             grid,
             walls,
             diag_hud,
+            player_view,
             diagnostics: Diagnostics::new(),
+            player,
             camera_platform,
         })
     }
 
-    pub fn update(&mut self, dt: u32, input: &Input, diagnostics: Diagnostic) {
-        // TODO: player controller would run here, update his position and then cameras accordingly
-        let len = dt as i32;
-        if input.has_up() {
-            self.camera_platform = self.camera_platform.offset(0, -len);
-        }
-        if input.has_down() {
-            self.camera_platform = self.camera_platform.offset(0, len);
-        }
-        if input.has_left() {
-            self.camera_platform = self.camera_platform.offset(-len, 0);
-        }
-        if input.has_right() {
-            self.camera_platform = self.camera_platform.offset(len, 0);
-        }
+    pub fn update(&mut self, dt: f32, input: &Input, diagnostics: Diagnostic) {
+        self.player_view.debug(true);
+        self.player.update(dt, input);
         self.diagnostics.update(diagnostics);
     }
 
@@ -80,6 +83,7 @@ impl<'a> Game<'a> {
         self.floor.render(canvas, &self.camera_platform)?;
         self.walls.render(canvas, &self.camera_platform)?;
         self.diag_hud.render(canvas, &self.diagnostics.current())?;
+        self.player_view.render(canvas, &self.player)?;
         canvas.present();
         Ok(())
     }

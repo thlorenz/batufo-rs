@@ -1,6 +1,7 @@
+use crate::engine::vector::Vector;
 use sdl2::rect::{Point, Rect};
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TilePosition {
     pub col: u32,
     pub row: u32,
@@ -34,6 +35,16 @@ impl TilePosition {
 
     pub fn to_world_rect(&self, tile_size: u32) -> Rect {
         WorldPosition::from_tile_position(self, tile_size).to_rect(tile_size)
+    }
+
+    pub fn apply_velocity(&self, dt: f32, velocity: &Vector, tile_size: u32) -> TilePosition {
+        if *velocity == Vector::zero() {
+            return self.clone();
+        }
+        let wp = self.to_world_position(tile_size);
+        let dx = wp.x + (velocity.x * dt) as u32;
+        let dy = wp.y + (velocity.y * dt) as u32;
+        WorldPosition::new(dx, dy).to_tile_position(tile_size)
     }
 }
 

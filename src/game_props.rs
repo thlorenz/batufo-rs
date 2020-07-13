@@ -8,6 +8,7 @@ pub const MIN_TIME_PER_FRAME_MS: u32 = (TIME_PER_FRAME_MS as f32 * 0.9) as u32;
 
 // Colors
 pub const ANTIQUE_WHITE: (u8, u8, u8) = (0xfa, 0xeb, 0xd7);
+pub const AMBER_ACCENT: (u8, u8, u8) = (0xFF, 0xE5, 0x7F);
 
 // Debug
 pub const DIAGNOSTICS_COUNT: usize = (FRAME_RATE / 5) as usize;

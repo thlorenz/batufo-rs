@@ -17,17 +17,17 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
 use crate::game_props::{MIN_TIME_PER_FRAME_MS, RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
-use views::text::Text;
 use sdl2::ttf::FontStyle;
 use std::path::Path;
+use views::text::Text;
 
 mod arena;
 mod data;
 mod engine;
-mod views;
 mod game;
 mod game_props;
 mod inputs;
+mod views;
 
 #[derive(fmt::Debug)]
 pub struct WindowSettings {
@@ -70,8 +70,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
         FontStyle::NORMAL,
     )?;
 
-    // let arena = Arena::for_level("mini")?;
-    let arena = Arena::for_level("practice arena")?;
+    let arena = Arena::for_level("mini")?;
+    // let arena = Arena::for_level("practice arena")?;
     // let arena = Arena::for_level("face off")?;
     let mut game = Game::new(&arena, floor_asset, wall_asset, diag_text)?;
 
@@ -140,7 +140,8 @@ fn start_event_loop(
             }
         }
         polled_ts = timer.ticks();
-        game.update(dt, &input, diagnostics);
+        // TODO: measure time more exact than just on ms resolution
+        game.update(dt as f32, &input, diagnostics);
         updated_ts = timer.ticks();
         game.render(canvas).expect("FATAL: game render failed");
         rendered_ts = timer.ticks();
