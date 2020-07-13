@@ -6,24 +6,24 @@ use crate::engine::position::TilePosition;
 use crate::engine::sprite::{PositionedSprite, Sprite};
 use sdl2::rect::Point;
 
-pub struct Floor<'a> {
+pub struct FloorView<'a> {
     floor_tiles: &'a Vec<TilePosition>,
     sprites: Vec<PositionedSprite<'a>>,
     tile_size: u32,
 }
 
-impl<'a> Floor<'a> {
+impl<'a> FloorView<'a> {
     fn new(floor_tiles: &'a Vec<TilePosition>, asset: &'a ImageAsset, tile_size: u32) -> Self {
         let sprites = init_sprites(floor_tiles, asset, tile_size);
-        Floor {
+        FloorView {
             floor_tiles,
             sprites,
             tile_size,
         }
     }
 
-    pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> Floor<'a> {
-        Floor::new(&arena.floor_tiles, asset, tile_size)
+    pub fn from_arena(arena: &'a Arena, asset: &'a ImageAsset, tile_size: u32) -> FloorView<'a> {
+        FloorView::new(&arena.floor_tiles, asset, tile_size)
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas, camera: &Point) -> Result<(), String> {

@@ -4,17 +4,17 @@ use crate::engine::sprite::Sprite;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::WindowCanvas;
 
-pub struct Walls<'a> {
+pub struct WallsView<'a> {
     rects: Vec<Rect>,
     sprite: Sprite<'a>,
 }
 
-impl<'a> Walls<'a> {
+impl<'a> WallsView<'a> {
     pub fn new(wall_tiles: &Vec<TilePosition>, asset: &'a ImageAsset, tile_size: u32) -> Self {
         let sprite =
             Sprite::new(&asset, tile_size, 0).expect("unable to create walls sprite for idx ");
         let rects = init_rects(wall_tiles, tile_size);
-        Walls { rects, sprite }
+        WallsView { rects, sprite }
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas, camera: &Point) -> Result<(), String> {

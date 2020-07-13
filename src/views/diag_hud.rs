@@ -3,7 +3,7 @@ use sdl2::rect::{Point, Rect};
 use sdl2::render::WindowCanvas;
 
 use crate::data::diagnostics::Diagnostic;
-use crate::entities::text::{FontBlend, Text};
+use crate::views::text::{FontBlend, Text};
 use std::error::Error;
 
 pub struct DiagHud<'a> {

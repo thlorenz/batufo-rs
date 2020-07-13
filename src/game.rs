@@ -3,13 +3,13 @@ use sdl2::render::WindowCanvas;
 
 use crate::arena::arena::Arena;
 use crate::data::diagnostics::{Diagnostic, Diagnostics};
-use crate::entities::diag_hud::DiagHud;
-use crate::entities::floor::Floor;
-use crate::entities::grid::Grid;
-use crate::entities::text::Text;
-use crate::entities::walls::Walls;
 use crate::game_props::{ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
 use crate::inputs::input::Input;
+use crate::views::diag_hud::DiagHud;
+use crate::views::floor_view::FloorView;
+use crate::views::grid_view::GridView;
+use crate::views::text::Text;
+use crate::views::walls_view::WallsView;
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
 use std::error::Error;
@@ -17,9 +17,9 @@ use std::error::Error;
 pub struct Game<'a> {
     // renderers
     arena: &'a Arena,
-    floor: Floor<'a>,
-    grid: Grid,
-    walls: Walls<'a>,
+    floor: FloorView<'a>,
+    grid: GridView,
+    walls: WallsView<'a>,
     diag_hud: DiagHud<'a>,
 
     // models
@@ -36,9 +36,9 @@ impl<'a> Game<'a> {
         wall_asset: &'a ImageAsset<'a>,
         stats_text: Text<'a>,
     ) -> Result<Self, Box<dyn Error>> {
-        let floor = Floor::from_arena(&arena, floor_asset, TILE_SIZE);
-        let grid = Grid::new(arena.ncols, arena.nrows, TILE_SIZE);
-        let walls = Walls::new(&arena.walls, wall_asset, TILE_SIZE);
+        let floor = FloorView::from_arena(&arena, floor_asset, TILE_SIZE);
+        let grid = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
+        let walls = WallsView::new(&arena.walls, wall_asset, TILE_SIZE);
         let diag_hud = DiagHud::new(Point::new(0, 0), stats_text);
 
         let camera_platform = Point::new(0, 0);

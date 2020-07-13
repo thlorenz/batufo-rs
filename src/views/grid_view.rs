@@ -2,15 +2,15 @@ use sdl2::pixels::Color;
 use sdl2::rect::Point;
 use sdl2::render::WindowCanvas;
 
-pub struct Grid {
+pub struct GridView {
     ncols: u32,
     nrows: u32,
     tile_size: u32,
 }
 
-impl Grid {
+impl GridView {
     pub fn new(ncols: u32, nrows: u32, tile_size: u32) -> Self {
-        Grid {
+        GridView {
             ncols,
             nrows,
             tile_size,

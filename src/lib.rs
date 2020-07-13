@@ -17,14 +17,14 @@ use crate::engine::assets::image_asset::{ImageAsset, ImageAssets};
 use crate::game::Game;
 use crate::game_props::{MIN_TIME_PER_FRAME_MS, RENDER_GPU_ACCELERATED, TIME_PER_FRAME_MS};
 use crate::inputs::input::Input;
-use entities::text::Text;
+use views::text::Text;
 use sdl2::ttf::FontStyle;
 use std::path::Path;
 
 mod arena;
 mod data;
 mod engine;
-mod entities;
+mod views;
 mod game;
 mod game_props;
 mod inputs;
