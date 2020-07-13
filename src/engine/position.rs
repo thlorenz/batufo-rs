@@ -1,5 +1,6 @@
-use crate::engine::vector::Vector;
 use sdl2::rect::{Point, Rect};
+
+use crate::engine::vector::Vector;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TilePosition {
@@ -48,6 +49,7 @@ impl TilePosition {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct WorldPosition {
     pub x: u32,
     pub y: u32,
@@ -79,5 +81,41 @@ impl WorldPosition {
 
     pub fn to_rect(&self, tile_size: u32) -> Rect {
         Rect::from_center(self.to_point(), tile_size, tile_size)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    const TILE_SIZE: u32 = 20;
+    use super::*;
+    mod tile_position {
+        use super::*;
+
+        #[test]
+        fn init() {
+            let tp = TilePosition::new(1, 1, 10.0, 10.0);
+            let centered = TilePosition::centered(1, 1, TILE_SIZE);
+            assert_eq!(tp, centered, "new(1, 1, 10.0, 10.0) == centered(1, 1, 20)")
+        }
+
+        #[test]
+        fn conversions() {
+            let tp = TilePosition::new(10, 10, 10.0, 10.0);
+            assert_eq!(
+                tp.to_world_position(TILE_SIZE),
+                WorldPosition::new(210, 210),
+                "to_world_position"
+            );
+            assert_eq!(
+                tp.to_world_point(TILE_SIZE),
+                Point::new(210, 210),
+                "to_world_point"
+            );
+            assert_eq!(
+                tp.to_world_rect(TILE_SIZE),
+                Rect::new(200, 200, TILE_SIZE, TILE_SIZE),
+                "to_world_rect"
+            );
+        }
     }
 }
