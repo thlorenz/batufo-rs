@@ -78,7 +78,7 @@ mod tests {
     use super::*;
 
     const TILE_SIZE: u32 = 2;
-    const CENTER: i32 = (TILE_SIZE / 2) as i32;
+    const CENTER: f32 = TILE_SIZE as f32 / 2.0;
     #[test]
     fn floor_tiles() {
         let small_terrain = "

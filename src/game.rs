@@ -50,7 +50,7 @@ impl<'a> Game<'a> {
 
         // data
         // TODO: get player tile position from arena
-        let hw: i32 = (TILE_SIZE / 2) as i32;
+        let hw: f32 = TILE_SIZE as f32 / 2.0;
         let player = Player::new(&TilePosition::new(3, 2, hw, hw));
 
         // cameras

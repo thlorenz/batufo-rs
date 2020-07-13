@@ -5,12 +5,12 @@ use sdl2::rect::{Point, Rect};
 pub struct TilePosition {
     pub col: u32,
     pub row: u32,
-    pub rel_x: i32,
-    pub rel_y: i32,
+    pub rel_x: f32,
+    pub rel_y: f32,
 }
 
 impl TilePosition {
-    pub fn new(col: u32, row: u32, rel_x: i32, rel_y: i32) -> TilePosition {
+    pub fn new(col: u32, row: u32, rel_x: f32, rel_y: f32) -> TilePosition {
         TilePosition {
             col,
             row,
@@ -20,8 +20,8 @@ impl TilePosition {
     }
 
     pub fn centered(col: u32, row: u32, tile_size: u32) -> TilePosition {
-        let rel_x = (tile_size / 2) as i32;
-        let rel_y = (tile_size / 2) as i32;
+        let rel_x = tile_size as f32 / 2.0;
+        let rel_y = tile_size as f32 / 2.0;
         TilePosition::new(col, row, rel_x, rel_y)
     }
 
@@ -68,9 +68,9 @@ impl WorldPosition {
     pub fn to_tile_position(&self, tile_size: u32) -> TilePosition {
         let col = self.x / tile_size;
         let row = self.y / tile_size;
-        let rel_x = self.x % tile_size;
-        let rel_y = self.y % tile_size;
-        TilePosition::new(col, row, rel_x as i32, rel_y as i32)
+        let rel_x = (self.x % tile_size) as f32;
+        let rel_y = (self.y % tile_size) as f32;
+        TilePosition::new(col, row, rel_x, rel_y)
     }
 
     pub fn to_point(&self) -> Point {
