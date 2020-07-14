@@ -98,6 +98,7 @@ impl<'a> Game<'a> {
         self.hud_diagnostics.render(
             canvas,
             &self.diagnostics.current(),
+            &self.player,
             &self.cameras,
             &window_size,
         )?;

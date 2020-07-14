@@ -4,6 +4,8 @@ use sdl2::render::WindowCanvas;
 
 use crate::data::cameras::Cameras;
 use crate::data::diagnostics::Diagnostic;
+use crate::data::player::Player;
+use crate::game_props::TILE_SIZE;
 use crate::views::text::{FontBlend, Text};
 use std::error::Error;
 
@@ -30,6 +32,7 @@ impl<'a> HudDiagnostics<'a> {
         &self,
         canvas: &mut WindowCanvas,
         diagnostics: &Diagnostic,
+        player: &Player,
         cameras: &Cameras,
         window_size: &(u32, u32),
     ) -> Result<(), Box<dyn Error>> {
@@ -57,10 +60,22 @@ impl<'a> HudDiagnostics<'a> {
             FontBlend::Blended,
         )?;
 
-        let cams: String = format!("({}:{})", cameras.platform.x, cameras.platform.y);
+        let ptp = &player.tile_position;
+        let pwp = ptp.to_world_point(TILE_SIZE);
+        let cams: String = format!(
+            "P: [({}+{}:{}+{}) ({}:{})] C:({}:{})",
+            ptp.col,
+            ptp.rel_x,
+            ptp.row,
+            ptp.rel_y,
+            pwp.x,
+            pwp.y,
+            cameras.platform.x,
+            cameras.platform.y
+        );
         self.text.render(
             canvas,
-            Point::new((window_size.0 - 100) as i32, 0),
+            Point::new((stats_width + 100) as i32, 0),
             &cams,
             cams_width,
             Color::GREEN,
