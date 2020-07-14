@@ -10,8 +10,7 @@ use crate::data::diagnostics::{Diagnostic, Diagnostics};
 use crate::data::player::Player;
 use crate::engine::assets::image_asset::ImageAsset;
 use crate::game_props::{
-    AMBER_ACCENT, ANTIQUE_WHITE, HUD_DIAGNOSITCS_WIDTH_PERCENT, HUD_DIAGNOSTICS_HEIGHT,
-    RENDER_GRID, TILE_SIZE,
+    AMBER_ACCENT, ANTIQUE_WHITE, HUD_DIAGNOSTICS_HEIGHT, RENDER_GRID, TILE_SIZE,
 };
 use crate::inputs::input::Input;
 use crate::views::floor_view::FloorView;
@@ -48,12 +47,8 @@ impl<'a> Game<'a> {
         let floor = FloorView::from_arena(&arena, floor_asset, TILE_SIZE);
         let grid = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
         let walls = WallsView::new(&arena.walls, wall_asset, TILE_SIZE);
-        let hud_diagnostics = HudDiagnostics::new(
-            Point::new(0, 0),
-            HUD_DIAGNOSTICS_HEIGHT,
-            HUD_DIAGNOSITCS_WIDTH_PERCENT,
-            stats_text,
-        );
+        let hud_diagnostics =
+            HudDiagnostics::new(Point::new(0, 0), HUD_DIAGNOSTICS_HEIGHT, stats_text);
         let player_view = PlayerView::new(Color::RGB.call(AMBER_ACCENT));
 
         // data
@@ -100,8 +95,12 @@ impl<'a> Game<'a> {
         }
         self.floor.render(canvas, &self.cameras.platform)?;
         self.walls.render(canvas, &self.cameras.platform)?;
-        self.hud_diagnostics
-            .render(canvas, &self.diagnostics.current(), &window_size)?;
+        self.hud_diagnostics.render(
+            canvas,
+            &self.diagnostics.current(),
+            &self.cameras,
+            &window_size,
+        )?;
         self.player_view.render(canvas, &self.player)?;
         canvas.present();
         Ok(())
