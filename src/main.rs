@@ -27,7 +27,7 @@ fn large_window() -> WindowSettings {
 #[allow(dead_code)]
 fn small_window() -> WindowSettings {
     WindowSettings {
-        x: -600,
+        x: -800,
         y: 0,
         title: "batufo",
         width: 600,

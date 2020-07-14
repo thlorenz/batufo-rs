@@ -168,7 +168,7 @@ fn build_window(
     w: &WindowSettings,
 ) -> Result<Window, WindowBuildError> {
     let mut builder: WindowBuilder = video_subsystem.window(w.title, w.width, w.height);
-    builder.position(w.x, w.y).opengl();
+    builder.position(w.x, w.y);
 
     if w.resizable {
         builder.resizable();
