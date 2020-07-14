@@ -2,6 +2,17 @@ use sdl2::rect::{Point, Rect};
 use sdl2::render::{Texture, TextureValueError, WindowCanvas};
 
 use crate::engine::assets::image_asset::ImageAsset;
+use crate::game_props::TILE_SIZE;
+
+fn rect_visible(rect: Rect) -> bool {
+    // Just TILE_SIZE is not enough, however this is the smallest that worked without
+    // showing the freeze for the face_off level.
+    let size = TILE_SIZE as i32 * 2;
+
+    // TODO: in the future we should take the actual viewport into account as well
+    let p = rect.bottom_left();
+    p.x > size && p.y > size
+}
 
 pub struct Sprite<'a> {
     texture: &'a Texture<'a>,
@@ -24,7 +35,10 @@ impl<'a> Sprite<'a> {
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas, rect: Rect) -> Result<(), String> {
-        canvas.copy(&self.texture, Some(self.rect), Some(rect))
+        if rect_visible(rect) {
+            canvas.copy(&self.texture, Some(self.rect), Some(rect))?
+        }
+        Ok(())
     }
 
     pub fn render_centered(&self, canvas: &mut WindowCanvas, center: Point) -> Result<(), String> {
