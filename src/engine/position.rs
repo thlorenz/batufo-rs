@@ -46,10 +46,10 @@ impl TilePosition {
         // TODO: due to rounding we're loosing info when velocity is very small
         // it seems like we'd need to track world position as floats and only
         // convert to pixels when drawing
-        let dx = (velocity.x * dt).round() as i32;
-        let dy = (velocity.y * dt).round() as i32;
-        let x = (wp.x as i32 + dx).max(0) as u32;
-        let y = (wp.y as i32 + dy).max(0) as u32;
+        let dx = velocity.x * dt;
+        let dy = velocity.y * dt;
+        let x = wp.x + dx;
+        let y = wp.y + dy;
         let new_wp = WorldPosition::new(x, y);
         /*
         eprintln!(
@@ -63,29 +63,28 @@ impl TilePosition {
 }
 
 #[derive(Debug, PartialEq)]
-// TODO: should world position have negative coordinates?
-//   how else are we gonna draw background that's outside the tilemap?
 pub struct WorldPosition {
-    pub x: u32,
-    pub y: u32,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl WorldPosition {
-    pub fn new(x: u32, y: u32) -> WorldPosition {
+    pub fn new(x: f32, y: f32) -> WorldPosition {
         WorldPosition { x, y }
     }
 
     pub fn from_tile_position(tp: &TilePosition, tile_size: u32) -> WorldPosition {
-        let x = tile_size * tp.col + tp.rel_x.round() as u32;
-        let y = tile_size * tp.row + tp.rel_y.round() as u32;
+        let x = (tile_size * tp.col) as f32 + tp.rel_x;
+        let y = (tile_size * tp.row) as f32 + tp.rel_y;
         WorldPosition::new(x, y)
     }
 
     pub fn to_tile_position(&self, tile_size: u32) -> TilePosition {
-        let col = self.x / tile_size;
-        let row = self.y / tile_size;
-        let rel_x = (self.x % tile_size) as f32;
-        let rel_y = (self.y % tile_size) as f32;
+        let tile_size = tile_size as f32;
+        let col = (self.x / tile_size).floor() as u32;
+        let row = (self.y / tile_size).floor() as u32;
+        let rel_x = self.x % tile_size;
+        let rel_y = self.y % tile_size;
         TilePosition::new(col, row, rel_x, rel_y)
     }
 
@@ -119,7 +118,7 @@ mod tests {
             let tp = TilePosition::new(10, 10, 10.0, 10.0);
             assert_eq!(
                 tp.to_world_position(TILE_SIZE),
-                WorldPosition::new(210, 210),
+                WorldPosition::new(210.0, 210.0),
                 "to_world_position"
             );
             assert_eq!(
@@ -136,17 +135,17 @@ mod tests {
 
         #[test]
         fn tile_world_round_trips() {
-            let wp0 = WorldPosition { x: 210, y: 240 };
+            let wp0 = WorldPosition { x: 210.0, y: 240.0 };
             let tp = wp0.to_tile_position(TILE_SIZE);
             let wp1 = tp.to_world_position(TILE_SIZE);
             assert_eq!(wp0, wp1);
 
-            let wp0 = WorldPosition { x: 240, y: 241 };
+            let wp0 = WorldPosition { x: 240.0, y: 241.0 };
             let tp = wp0.to_tile_position(TILE_SIZE);
             let wp1 = tp.to_world_position(TILE_SIZE);
             assert_eq!(wp0, wp1);
 
-            let wp0 = WorldPosition { x: 10, y: 21 };
+            let wp0 = WorldPosition { x: 10.0, y: 21.0 };
             let tp = wp0.to_tile_position(5);
             let wp1 = tp.to_world_position(5);
             assert_eq!(wp0, wp1);
