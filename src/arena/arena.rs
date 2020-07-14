@@ -9,6 +9,7 @@ use std::fmt;
 pub struct Arena {
     pub floor_tiles: Vec<TilePosition>,
     pub walls: Vec<TilePosition>,
+    pub player: TilePosition,
     pub ncols: u32,
     pub nrows: u32,
 }
@@ -17,12 +18,14 @@ impl Arena {
     pub fn new(
         floor_tiles: Vec<TilePosition>,
         walls: Vec<TilePosition>,
+        player: TilePosition,
         ncols: u32,
         nrows: u32,
     ) -> Arena {
         Arena {
             floor_tiles,
             walls,
+            player,
             ncols,
             nrows,
         }
@@ -33,6 +36,7 @@ impl Arena {
         let ncols = tilemap.ncols;
         let mut floor_tiles: Vec<TilePosition> = Vec::new();
         let mut walls: Vec<TilePosition> = Vec::new();
+        let mut player: Option<TilePosition> = None;
         for row in 0..nrows {
             for col in 0..ncols {
                 let idx: usize = (row * ncols + col) as usize;
@@ -45,7 +49,9 @@ impl Arena {
                     Tile::Empty => {}
                     Tile::Hole => {}
                     Tile::Wall => walls.push(TilePosition::centered(col, row, tilemap.tile_size)),
-                    Tile::Player => {}
+                    Tile::Player => {
+                        player = Some(TilePosition::centered(col, row, tilemap.tile_size))
+                    }
                     Tile::Medkit => {}
                     Tile::Shield => {}
                     Tile::Bomb => {}
@@ -60,7 +66,8 @@ impl Arena {
                 }
             }
         }
-        Arena::new(floor_tiles, walls, ncols, nrows)
+        let player = player.expect("Terrain is missing player");
+        Arena::new(floor_tiles, walls, player, ncols, nrows)
     }
 
     pub fn for_level(level_name: &'static str) -> Result<Arena, Box<dyn Error>> {
@@ -83,7 +90,7 @@ mod tests {
     fn floor_tiles() {
         let small_terrain = "
 ====
-=  =
+=p =
 ====
 ";
 

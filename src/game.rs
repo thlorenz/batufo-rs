@@ -4,7 +4,6 @@ use sdl2::render::WindowCanvas;
 use crate::arena::arena::Arena;
 use crate::data::diagnostics::{Diagnostic, Diagnostics};
 use crate::data::player::Player;
-use crate::engine::position::TilePosition;
 use crate::game_props::{AMBER_ACCENT, ANTIQUE_WHITE, RENDER_GRID, TILE_SIZE};
 use crate::inputs::input::Input;
 use crate::views::diag_hud::DiagHud;
@@ -49,9 +48,7 @@ impl<'a> Game<'a> {
         let player_view = PlayerView::new(Color::RGB.call(AMBER_ACCENT));
 
         // data
-        // TODO: get player tile position from arena
-        let hw: f32 = TILE_SIZE as f32 / 2.0;
-        let player = Player::new(&TilePosition::new(3, 2, hw, hw));
+        let player = Player::new(&arena.player);
 
         // cameras
         let camera_platform = Point::new(0, 0);
