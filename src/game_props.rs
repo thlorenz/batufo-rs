@@ -12,3 +12,6 @@ pub const AMBER_ACCENT: (u8, u8, u8) = (0xFF, 0xE5, 0x7F);
 
 // Debug
 pub const DIAGNOSTICS_COUNT: usize = (FRAME_RATE / 5) as usize;
+
+pub const HUD_DIAGNOSTICS_HEIGHT: u32 = 20;
+pub const HUD_DIAGNOSTICS_WIDTH_PERCENT: f32 = 0.5;

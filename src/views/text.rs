@@ -38,6 +38,7 @@ impl<'a> Text<'a> {
         canvas: &mut WindowCanvas,
         bottom_left: Point,
         text: &str,
+        max_width: u32,
         color: Color,
         font_blend: FontBlend,
     ) -> Result<(), Box<dyn Error>> {
@@ -48,6 +49,7 @@ impl<'a> Text<'a> {
         };
         let texture = self.texture_creator.create_texture_from_surface(&surface)?;
         let TextureQuery { width, height, .. } = texture.query();
+        let width = width.min(max_width);
         let rect = Rect::new(bottom_left.x, bottom_left.y, width, height);
 
         canvas.copy(&texture, None, Some(rect))?;

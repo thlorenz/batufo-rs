@@ -13,7 +13,7 @@ impl Player {
     pub fn new(tile_position: &TilePosition) -> Player {
         let radius = TILE_SIZE / 2;
         // let velocity = Vector::zero();
-        let velocity = Vector::new(0.0, -1.0);
+        let velocity = Vector::new(0.0, -0.5);
         Player {
             tile_position: tile_position.clone(),
             radius,
