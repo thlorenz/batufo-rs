@@ -5,7 +5,7 @@ pub const RENDER_GRID: bool = true;
 // for up to 10secs at times, see:
 // https://mrmacintosh.com/2020-002-update-causes-some-macs-to-freeze-when-using-hw-accelerated-video/
 // Experience is the same, except that CPU usage is a lot larger of course.
-pub const RENDER_GPU_ACCELERATED: bool = false;
+pub const RENDER_GPU_ACCELERATED: bool = true;
 
 pub const FRAME_RATE: u32 = 60;
 pub const TIME_PER_FRAME_MS: u32 = 1000 / FRAME_RATE;

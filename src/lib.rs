@@ -96,7 +96,7 @@ fn start_event_loop(
     let mut rendered_ts: u32 = started_ts;
     'running: loop {
         let dt = timer.ticks() - started_ts;
-        if dt < MIN_TIME_PER_FRAME_MS {
+        if !RENDER_GPU_ACCELERATED && dt < MIN_TIME_PER_FRAME_MS {
             timer.delay(MIN_TIME_PER_FRAME_MS - dt);
         }
         let ts = timer.ticks();
@@ -140,7 +140,6 @@ fn start_event_loop(
             }
         }
         polled_ts = timer.ticks();
-        // TODO: measure time more exact than just on ms resolution
         game.update(
             dt as f32,
             canvas.window().drawable_size(),
@@ -157,7 +156,7 @@ fn start_event_loop(
 
 fn build_canvas(window: Window) -> Result<WindowCanvas, IntegerOrSdlError> {
     if RENDER_GPU_ACCELERATED {
-        window.into_canvas().accelerated().build()
+        window.into_canvas().present_vsync().accelerated().build()
     } else {
         window.into_canvas().software().build()
     }
