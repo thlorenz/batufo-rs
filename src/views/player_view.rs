@@ -25,8 +25,14 @@ impl PlayerView {
         self.debug_player_hit_tile = debug_player_hit_tile;
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas, player: &Player) -> Result<(), Box<dyn Error>> {
+    pub fn render(
+        &self,
+        canvas: &mut WindowCanvas,
+        viewport: &Rect,
+        player: &Player,
+    ) -> Result<(), Box<dyn Error>> {
         let pos = player.tile_position.to_world_point(TILE_SIZE);
+        let pos = pos - viewport.top_left();
         self.render_debug_hit_tile(canvas, pos, player.radius as i32)?;
 
         Ok(())
@@ -42,7 +48,7 @@ impl PlayerView {
             let width = (radius * 2) as u32;
             let rect = Rect::new(pos.x - radius, pos.y - radius, width, width);
             canvas.set_draw_color(self.player_hit_tile_color);
-            canvas.draw_rect(rect)?;
+            canvas.fill_rect(rect)?;
         }
         Ok(())
     }

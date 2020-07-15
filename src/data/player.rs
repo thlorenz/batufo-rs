@@ -6,14 +6,14 @@ use crate::inputs::input::Input;
 pub struct Player {
     pub tile_position: TilePosition,
     pub radius: u32,
-    velocity: Vector,
+    pub velocity: Vector,
 }
 
 impl Player {
     pub fn new(tile_position: &TilePosition) -> Player {
         let radius = TILE_SIZE / 2;
         // let velocity = Vector::zero();
-        let velocity = Vector::new(0.0, -10.0);
+        let velocity = Vector::new(0.0, 0.0);
         Player {
             tile_position: tile_position.clone(),
             radius,
@@ -29,7 +29,16 @@ impl Player {
         // TODO: need to have proper increase velocity function that takes thrust force
         // and angle into account (see vector.rs)
         if input.has_up() {
-            self.velocity.scale(1.0, -dt);
+            self.velocity = self.velocity.translate(0.0, -0.2);
+        }
+        if input.has_right() {
+            self.velocity = self.velocity.translate(0.2, 0.0);
+        }
+        if input.has_down() {
+            self.velocity = self.velocity.translate(0.0, 0.2);
+        }
+        if input.has_left() {
+            self.velocity = self.velocity.translate(-0.2, 0.0);
         }
     }
 }

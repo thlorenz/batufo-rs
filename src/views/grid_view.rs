@@ -1,5 +1,5 @@
 use sdl2::pixels::Color;
-use sdl2::rect::Point;
+use sdl2::rect::{Point, Rect};
 use sdl2::render::WindowCanvas;
 
 pub struct GridView {
@@ -17,16 +17,17 @@ impl GridView {
         }
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), String> {
+    pub fn render(&self, canvas: &mut WindowCanvas, viewport: &Rect) -> Result<(), String> {
         canvas.set_draw_color(Color::GRAY);
-        let max_x = (self.ncols * self.tile_size) as i32;
-        let max_y = (self.nrows * self.tile_size) as i32;
+        let origin = viewport.top_left();
+        let max_x = (self.ncols * self.tile_size) as i32 - origin.x;
+        let max_y = (self.nrows * self.tile_size) as i32 - origin.y;
         for row in 0..self.nrows + 1 {
-            let y = (row * self.tile_size) as i32;
+            let y = (row * self.tile_size) as i32 - origin.y;
             canvas.draw_line(Point::new(0, y), Point::new(max_x, y))?;
         }
         for col in 0..self.ncols + 1 {
-            let x = (col * self.tile_size) as i32;
+            let x = (col * self.tile_size) as i32 - origin.x;
             canvas.draw_line(Point::new(x, 0), Point::new(x, max_y))?;
         }
         Ok(())

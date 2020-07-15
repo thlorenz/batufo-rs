@@ -71,8 +71,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     )?;
 
     // let arena = Arena::for_level("mini")?;
-    // let arena = Arena::for_level("practice arena")?;
-    let arena = Arena::for_level("face off")?;
+    let arena = Arena::for_level("practice arena")?;
+    // let arena = Arena::for_level("face off")?;
     let mut game = Game::new(&arena, floor_asset, wall_asset, diag_text)?;
 
     println!("starting event loop");
@@ -143,7 +143,7 @@ fn start_event_loop(
         // TODO: measure time more exact than just on ms resolution
         game.update(
             dt as f32,
-            &canvas.window().drawable_size(),
+            canvas.window().drawable_size(),
             &input,
             diagnostics,
         );

@@ -3,8 +3,8 @@ extern crate sdl2;
 use batufo::{Config, WindowSettings};
 
 pub fn main() {
-    //let window_settings = small_window();
-    let window_settings = large_window();
+    let window_settings = small_window();
+    // let window_settings = large_window();
     let config = Config { window_settings };
     match batufo::start(&config) {
         Ok(_) => {}
@@ -30,7 +30,7 @@ fn small_window() -> WindowSettings {
         x: -800,
         y: 0,
         title: "batufo",
-        width: 600,
+        width: 800,
         height: 600,
         resizable: true,
     }

@@ -1,7 +1,7 @@
 use crate::engine::assets::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use crate::engine::sprite::Sprite;
-use sdl2::rect::{Point, Rect};
+use sdl2::rect::Rect;
 use sdl2::render::WindowCanvas;
 
 pub struct WallsView<'a> {
@@ -17,10 +17,11 @@ impl<'a> WallsView<'a> {
         WallsView { rects, sprite }
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas, camera: &Point) -> Result<(), String> {
+    pub fn render(&self, canvas: &mut WindowCanvas, viewport: &Rect) -> Result<(), String> {
+        let origin = viewport.top_left();
         for rect in self.rects.iter() {
             let mut rect = rect.clone();
-            rect.offset(camera.x, camera.y);
+            rect.offset(-origin.x, -origin.y);
             self.sprite.render(canvas, rect)?;
         }
         Ok(())

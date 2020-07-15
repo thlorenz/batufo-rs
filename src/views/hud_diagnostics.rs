@@ -36,8 +36,8 @@ impl<'a> HudDiagnostics<'a> {
         cameras: &Cameras,
         window_size: &(u32, u32),
     ) -> Result<(), Box<dyn Error>> {
-        let stats_width = (window_size.0 as f32 * 0.5) as u32;
-        let cams_width = (window_size.0 as f32 * 0.5) as u32;
+        let stats_width = (window_size.0 as f32 * 0.3) as u32;
+        let cams_width = (window_size.0 as f32 * 0.7) as u32;
         let rect = Rect::new(self.position.x, self.position.y, window_size.0, self.height);
 
         canvas.set_draw_color(self.background_color);
@@ -62,20 +62,27 @@ impl<'a> HudDiagnostics<'a> {
 
         let ptp = &player.tile_position;
         let pwp = ptp.to_world_point(TILE_SIZE);
+        let velocity = &player.velocity;
+        let platform_origin = cameras.platform.top_left();
+        let platform_size = cameras.platform.size();
         let cams: String = format!(
-            "P: [({}+{}:{}+{}) ({}:{})] C:({}:{})",
+            "P: [({}+{}:{}+{})=({}:{}) v({}:{})] C:({}:{} {}x{})",
             ptp.col,
             ptp.rel_x,
             ptp.row,
             ptp.rel_y,
             pwp.x,
             pwp.y,
-            cameras.platform.x,
-            cameras.platform.y
+            velocity.x,
+            velocity.y,
+            platform_origin.x,
+            platform_origin.y,
+            platform_size.0,
+            platform_size.1,
         );
         self.text.render(
             canvas,
-            Point::new((stats_width + 100) as i32, 0),
+            Point::new((stats_width + 20) as i32, 0),
             &cams,
             cams_width,
             Color::GREEN,

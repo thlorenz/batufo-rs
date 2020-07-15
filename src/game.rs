@@ -72,7 +72,7 @@ impl<'a> Game<'a> {
     pub fn update(
         &mut self,
         dt: f32,
-        window_size: &(u32, u32),
+        window_size: (u32, u32),
         input: &Input,
         diagnostics: Diagnostic,
     ) {
@@ -91,7 +91,7 @@ impl<'a> Game<'a> {
         canvas.set_draw_color(Color::RGB.call(ANTIQUE_WHITE));
         canvas.clear();
         if RENDER_GRID {
-            self.grid.render(canvas)?;
+            self.grid.render(canvas, &self.cameras.platform)?;
         }
         self.floor.render(canvas, &self.cameras.platform)?;
         self.walls.render(canvas, &self.cameras.platform)?;
@@ -102,7 +102,8 @@ impl<'a> Game<'a> {
             &self.cameras,
             &window_size,
         )?;
-        self.player_view.render(canvas, &self.player)?;
+        self.player_view
+            .render(canvas, &self.cameras.platform, &self.player)?;
         canvas.present();
         Ok(())
     }
