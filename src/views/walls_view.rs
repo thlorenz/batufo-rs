@@ -18,11 +18,8 @@ impl<'a> WallsView<'a> {
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas, viewport: &Rect) -> Result<(), String> {
-        let origin = viewport.top_left();
         for rect in self.rects.iter() {
-            let mut rect = rect.clone();
-            rect.offset(-origin.x, -origin.y);
-            self.sprite.render(canvas, rect)?;
+            self.sprite.render(canvas, viewport, &rect)?;
         }
         Ok(())
     }

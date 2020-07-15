@@ -2,16 +2,12 @@ use sdl2::rect::{Point, Rect};
 use sdl2::render::{Texture, TextureValueError, WindowCanvas};
 
 use crate::engine::assets::image_asset::ImageAsset;
-use crate::game_props::TILE_SIZE;
 
-fn rect_visible(rect: Rect) -> bool {
-    // Just TILE_SIZE is not enough, however this is the smallest that worked without
-    // showing the freeze for the face_off level.
-    let size = TILE_SIZE as i32 * 2;
-
-    // TODO: in the future we should take the actual viewport into account as well
-    let p = rect.bottom_left();
-    p.x > size && p.y > size
+fn rect_visible(rect: &Rect, viewport: &Rect) -> bool {
+    viewport.contains_point(rect.top_left())
+        || viewport.contains_point(rect.top_right())
+        || viewport.contains_point(rect.bottom_right())
+        || viewport.contains_point(rect.bottom_left())
 }
 
 pub struct Sprite<'a> {
@@ -34,16 +30,32 @@ impl<'a> Sprite<'a> {
         })
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas, rect: Rect) -> Result<(), String> {
-        if rect_visible(rect) {
-            canvas.copy(&self.texture, Some(self.rect), Some(rect))?
+    pub fn render(
+        &self,
+        canvas: &mut WindowCanvas,
+        viewport: &Rect,
+        rect: &Rect,
+    ) -> Result<(), String> {
+        let adjusted_to_viewport = Rect::new(
+            rect.x - viewport.x,
+            rect.y - viewport.y,
+            rect.width(),
+            rect.height(),
+        );
+        if rect_visible(rect, viewport) {
+            canvas.copy(&self.texture, Some(self.rect), Some(adjusted_to_viewport))?
         }
         Ok(())
     }
 
-    pub fn render_centered(&self, canvas: &mut WindowCanvas, center: Point) -> Result<(), String> {
+    pub fn render_centered(
+        &self,
+        canvas: &mut WindowCanvas,
+        viewport: &Rect,
+        center: Point,
+    ) -> Result<(), String> {
         let rect = Rect::from_center(center, self.render_size, self.render_size);
-        self.render(canvas, rect)
+        self.render(canvas, viewport, &rect)
     }
 }
 
@@ -58,7 +70,6 @@ impl<'a> PositionedSprite<'a> {
     }
 
     pub fn render(&self, canvas: &mut WindowCanvas, viewport: &Rect) -> Result<(), String> {
-        let center = self.center - viewport.top_left();
-        self.sprite.render_centered(canvas, center)
+        self.sprite.render_centered(canvas, viewport, self.center)
     }
 }

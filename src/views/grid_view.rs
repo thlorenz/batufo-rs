@@ -24,11 +24,11 @@ impl GridView {
         let max_y = (self.nrows * self.tile_size) as i32 - origin.y;
         for row in 0..self.nrows + 1 {
             let y = (row * self.tile_size) as i32 - origin.y;
-            canvas.draw_line(Point::new(0, y), Point::new(max_x, y))?;
+            canvas.draw_line(Point::new(-origin.x, y), Point::new(max_x, y))?;
         }
         for col in 0..self.ncols + 1 {
             let x = (col * self.tile_size) as i32 - origin.x;
-            canvas.draw_line(Point::new(x, 0), Point::new(x, max_y))?;
+            canvas.draw_line(Point::new(x, -origin.y), Point::new(x, max_y))?;
         }
         Ok(())
     }
