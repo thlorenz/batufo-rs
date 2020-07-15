@@ -66,7 +66,7 @@ impl<'a> HudDiagnostics<'a> {
         let platform_origin = cameras.platform.top_left();
         let platform_size = cameras.platform.size();
         let cams: String = format!(
-            "P: [({}+{}:{}+{})=({}:{}) v({}:{})] C:({}:{} {}x{})",
+            "P: [({:3}+{:2.0}:{:3}+{:2.0})=({:4.0}:{:4.0}) v({:2.2}:{:2.2})] C:({:4.0}:{:4.0} {:4.0}x{:4.0})",
             ptp.col,
             ptp.rel_x,
             ptp.row,
