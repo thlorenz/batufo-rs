@@ -1,6 +1,11 @@
 pub const TILE_SIZE: u32 = 24 * 2;
 pub const RENDER_GRID: bool = true;
-pub const RENDER_GPU_ACCELERATED: bool = true;
+
+// Turning GPU acceleration off for now as it causes the Mac to freeze
+// for up to 10secs at times, see:
+// https://mrmacintosh.com/2020-002-update-causes-some-macs-to-freeze-when-using-hw-accelerated-video/
+// Experience is the same, except that CPU usage is a lot larger of course.
+pub const RENDER_GPU_ACCELERATED: bool = false;
 
 pub const FRAME_RATE: u32 = 60;
 pub const TIME_PER_FRAME_MS: u32 = 1000 / FRAME_RATE;
