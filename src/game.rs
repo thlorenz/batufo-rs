@@ -2,7 +2,7 @@ use std::error::Error;
 
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
-use sdl2::render::WindowCanvas;
+use sdl2::render::{TextureCreator, WindowCanvas};
 
 use crate::arena::arena::Arena;
 use crate::data::cameras::Cameras;
@@ -19,6 +19,7 @@ use crate::views::hud_diagnostics::HudDiagnostics;
 use crate::views::player_view::PlayerView;
 use crate::views::text::Text;
 use crate::views::walls_view::WallsView;
+use sdl2::video::WindowContext;
 
 pub struct Game<'a> {
     // views
@@ -38,13 +39,15 @@ pub struct Game<'a> {
 
 impl<'a> Game<'a> {
     pub fn new(
+        canvas: &mut WindowCanvas,
+        texture_creator: &'a TextureCreator<WindowContext>,
         arena: &'a Arena,
         floor_asset: &'a ImageAsset<'a>,
         wall_asset: &'a ImageAsset<'a>,
         stats_text: Text<'a>,
     ) -> Result<Self, Box<dyn Error>> {
         // views
-        let floor = FloorView::from_arena(&arena, floor_asset, TILE_SIZE);
+        let floor = FloorView::from_arena(canvas, texture_creator, &arena, floor_asset, TILE_SIZE)?;
         let grid = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
         let walls = WallsView::new(&arena.walls, wall_asset, TILE_SIZE);
         let hud_diagnostics =
@@ -85,7 +88,11 @@ impl<'a> Game<'a> {
         );
     }
 
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), Box<dyn Error>> {
+    pub fn render(
+        &self,
+        canvas: &mut WindowCanvas,
+        use_texture: bool,
+    ) -> Result<(), Box<dyn Error>> {
         let window_size = canvas.window().drawable_size();
 
         canvas.set_draw_color(Color::RGB.call(ANTIQUE_WHITE));
@@ -93,7 +100,13 @@ impl<'a> Game<'a> {
         if RENDER_GRID {
             self.grid.render(canvas, &self.cameras.platform)?;
         }
-        self.floor.render(canvas, &self.cameras.platform)?;
+
+        if use_texture {
+            self.floor.render(canvas, &self.cameras.platform)?;
+        } else {
+            self.floor
+                .render_individually(canvas, &self.cameras.platform)?;
+        }
         self.walls.render(canvas, &self.cameras.platform)?;
         self.hud_diagnostics.render(
             canvas,

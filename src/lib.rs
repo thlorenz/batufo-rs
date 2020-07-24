@@ -73,7 +73,14 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     // let arena = Arena::for_level("mini")?;
     // let arena = Arena::for_level("practice arena")?;
     let arena = Arena::for_level("face off")?;
-    let mut game = Game::new(&arena, floor_asset, wall_asset, diag_text)?;
+    let mut game = Game::new(
+        &mut canvas,
+        &texture_creator,
+        &arena,
+        floor_asset,
+        wall_asset,
+        diag_text,
+    )?;
 
     println!("starting event loop");
     start_event_loop(&sdl_context, &mut game, &mut canvas)?;
@@ -94,6 +101,8 @@ fn start_event_loop(
     let mut polled_ts: u32 = started_ts;
     let mut updated_ts: u32 = started_ts;
     let mut rendered_ts: u32 = started_ts;
+
+    let mut use_texture: bool = false;
     'running: loop {
         let dt = timer.ticks() - started_ts;
         if !RENDER_GPU_ACCELERATED && dt < MIN_TIME_PER_FRAME_MS {
@@ -120,22 +129,18 @@ fn start_event_loop(
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
-                Event::KeyDown {
-                    keycode: Some(Keycode::A),
-                    ..
-                } => input.left(),
-                Event::KeyDown {
-                    keycode: Some(Keycode::D),
-                    ..
-                } => input.right(),
-                Event::KeyDown {
-                    keycode: Some(Keycode::W),
-                    ..
-                } => input.up(),
-                Event::KeyDown {
-                    keycode: Some(Keycode::S),
-                    ..
-                } => input.down(),
+
+                Event::KeyDown { keycode: k, .. } => match k {
+                    Some(Keycode::A) => input.left(),
+                    Some(Keycode::D) => input.right(),
+                    Some(Keycode::W) => input.up(),
+                    Some(Keycode::S) => input.down(),
+                    Some(Keycode::T) => {
+                        use_texture = !use_texture;
+                        eprintln!("Using texture for floor tiles {}", use_texture);
+                    }
+                    _ => {}
+                },
                 _ => {}
             }
         }
@@ -147,7 +152,8 @@ fn start_event_loop(
             diagnostics,
         );
         updated_ts = timer.ticks();
-        game.render(canvas).expect("FATAL: game render failed");
+        game.render(canvas, use_texture)
+            .expect("FATAL: game render failed");
         rendered_ts = timer.ticks();
     }
 
