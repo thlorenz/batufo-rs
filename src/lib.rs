@@ -71,8 +71,8 @@ pub fn start(config: &Config) -> Result<(), Box<dyn Error>> {
     )?;
 
     // let arena = Arena::for_level("mini")?;
-    let arena = Arena::for_level("practice arena")?;
-    // let arena = Arena::for_level("face off")?;
+    // let arena = Arena::for_level("practice arena")?;
+    let arena = Arena::for_level("face off")?;
     let mut game = Game::new(&arena, floor_asset, wall_asset, diag_text)?;
 
     println!("starting event loop");

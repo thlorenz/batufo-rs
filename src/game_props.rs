@@ -1,4 +1,4 @@
-pub const TILE_SIZE: u32 = 24 * 2;
+pub const TILE_SIZE: u32 = 48;
 pub const RENDER_GRID: bool = true;
 
 // Turning GPU acceleration off for now as it causes the Mac to freeze

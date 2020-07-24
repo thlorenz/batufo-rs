@@ -1,10 +1,10 @@
+use sdl2::image::LoadTexture;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
 use sdl2::rect::Rect;
 use sdl2::render::{Texture, TextureCreator};
-use sdl2::surface::Surface;
 use sdl2::video::WindowContext;
 
 struct ImageAssetConf {
@@ -35,20 +35,16 @@ pub struct ImageAsset<'a> {
     pub tiles: u32,
     pub item_width: u32,
     pub item_height: u32,
-    pub surface: Surface<'a>,
     pub texture: Texture<'a>,
     pub path: &'static str,
 }
 
-#[allow(dead_code)]
 impl<'a> ImageAsset<'a> {
     fn new(
         asset: ImageAssetConf,
         texture_creator: &'a TextureCreator<WindowContext>,
     ) -> Result<Self, Box<dyn Error>> {
-        let surface = Surface::load_bmp(asset.path)?;
-        let texture = surface.as_texture(texture_creator)?;
-
+        let texture = texture_creator.load_texture(asset.path)?;
         Ok(ImageAsset {
             width: asset.width,
             height: asset.height,
@@ -58,7 +54,6 @@ impl<'a> ImageAsset<'a> {
             tiles: (asset.rows * asset.cols),
             item_width: asset.width / asset.cols,
             item_height: asset.height / asset.rows,
-            surface,
             texture,
         })
     }
@@ -122,11 +117,11 @@ impl<'a> ImageAssets<'a> {
         let mut asset_confs: HashMap<&'static str, ImageAssetConf> = HashMap::new();
         asset_confs.insert(
             "floor-tiles",
-            ImageAssetConf::new(384, 384, 8, 8, "assets/images/bg/floor-tiles.bmp"),
+            ImageAssetConf::new(384, 384, 8, 8, "assets/images/bg/floor-tiles.png"),
         );
         asset_confs.insert(
             "wall-metal",
-            ImageAssetConf::new(48, 48, 1, 1, "assets/images/bg/wall-metal.bmp"),
+            ImageAssetConf::new(48, 48, 1, 1, "assets/images/bg/wall-metal.png"),
         );
         let assets: HashMap<&str, ImageAsset> = load_all(asset_confs, texture_creator).unwrap();
 
