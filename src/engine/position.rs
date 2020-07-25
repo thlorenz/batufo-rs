@@ -29,7 +29,7 @@ impl TilePosition {
         WorldPosition::from_tile_position(self, tile_size)
     }
 
-    pub fn to_world_point(&self, tile_size: u32) -> Point2<i32> {
+    pub fn to_world_point(&self, tile_size: u32) -> Point2<f32> {
         WorldPosition::from_tile_position(self, tile_size).to_point()
     }
 
@@ -87,14 +87,14 @@ impl WorldPosition {
         TilePosition::new(col, row, rel_x, rel_y)
     }
 
-    pub fn to_point(&self) -> Point2<i32> {
-        Point2::new(self.x as i32, self.y as i32)
+    pub fn to_point(&self) -> Point2<f32> {
+        Point2::new(self.x as f32, self.y as f32)
     }
 
     pub fn to_rect(&self, tile_size: u32) -> Rect {
-        let ctr: Point2<i32> = self.to_point();
-        let ht = (tile_size / 2) as i32;
-        Rect::new_i32(ctr.x - ht, ctr.y - ht, tile_size as i32, tile_size as i32)
+        let ctr: Point2<f32> = self.to_point();
+        let ht = (tile_size / 2) as f32;
+        Rect::new(ctr.x - ht, ctr.y - ht, tile_size as f32, tile_size as f32)
     }
 }
 
@@ -124,7 +124,7 @@ mod tests {
             );
             assert_eq!(
                 tp.to_world_point(TILE_SIZE),
-                Point2::new(210, 210),
+                Point2::new(210.0, 210.0),
                 "to_world_point"
             );
             assert_eq!(
