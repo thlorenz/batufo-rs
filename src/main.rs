@@ -28,7 +28,7 @@ impl GameState {
     fn new(ctx: &mut Context, arena: Arena) -> GameResult<GameState> {
         let font = graphics::Font::new(ctx, "/fonts/RobotoMono.ttf")?;
         let floor_view = init_floor_view(ctx, &arena)?;
-        let grid_view = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
+        let grid_view = GridView::new(ctx, arena.ncols, arena.nrows, TILE_SIZE)?;
 
         let s = GameState {
             frames: 0,
