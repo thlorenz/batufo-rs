@@ -4,7 +4,7 @@ use crate::engine::position::TilePosition;
 use crate::game_props::AMBER_ACCENT;
 use ggez::graphics::spritebatch::SpriteBatch;
 use ggez::graphics::{DrawMode, FillOptions};
-use ggez::graphics::{DrawParam, Image, MeshBuilder, Rect};
+use ggez::graphics::{DrawParam, MeshBuilder};
 use ggez::{graphics, nalgebra as na, Context, GameResult};
 
 struct FloorTile {
@@ -42,6 +42,20 @@ impl FloorView {
         FloorView::new(asset, &arena.floor_tiles, tile_size)
     }
 
+    pub fn render(&self, ctx: &mut Context, use_sprite_batch: bool) -> GameResult {
+        if use_sprite_batch {
+            graphics::draw(ctx, &self.sprite_batch, (na::Point2::new(0.0, 0.0),))
+        } else {
+            for tile in &self.floor_tiles {
+                let src = self.asset.rect_for_idx(tile.tile_idx);
+                let param = DrawParam::default().src(src).dest(tile.center.clone());
+                graphics::draw(ctx, &self.asset.texture, param)?;
+            }
+            Ok(())
+        }
+    }
+
+    #[allow(dead_code)]
     pub fn render_debug(&self, ctx: &mut Context) -> GameResult {
         let ht = (self.tile_size / 2) as f32;
         let draw_args = (na::Point2::new(0.0, 0.0), 0.0, graphics::WHITE);
@@ -63,19 +77,6 @@ impl FloorView {
         graphics::draw(ctx, &mesh, draw_args)?;
 
         Ok(())
-    }
-
-    pub fn render(&self, ctx: &mut Context, use_sprite_batch: bool) -> GameResult {
-        if use_sprite_batch {
-            graphics::draw(ctx, &self.sprite_batch, (na::Point2::new(0.0, 0.0),))
-        } else {
-            for tile in &self.floor_tiles {
-                let src = self.asset.rect_for_idx(tile.tile_idx);
-                let param = DrawParam::default().src(src).dest(tile.center.clone());
-                graphics::draw(ctx, &self.asset.texture, param)?;
-            }
-            Ok(())
-        }
     }
 }
 

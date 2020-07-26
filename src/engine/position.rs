@@ -25,6 +25,7 @@ impl TilePosition {
         TilePosition::new(col, row, rel_x, rel_y)
     }
 
+    #[allow(dead_code)]
     pub fn to_world_position(&self, tile_size: u32) -> WorldPosition {
         WorldPosition::from_tile_position(self, tile_size)
     }
@@ -33,10 +34,12 @@ impl TilePosition {
         WorldPosition::from_tile_position(self, tile_size).to_point()
     }
 
+    #[allow(dead_code)]
     pub fn to_world_rect(&self, tile_size: u32) -> Rect {
         WorldPosition::from_tile_position(self, tile_size).to_rect(tile_size)
     }
 
+    #[allow(dead_code)]
     pub fn apply_velocity(&self, dt: f32, velocity: &Vector2<f32>, tile_size: u32) -> TilePosition {
         if *velocity == Vector2::new(0.0, 0.0) {
             return self.clone();
@@ -78,6 +81,7 @@ impl WorldPosition {
         WorldPosition::new(x, y)
     }
 
+    #[allow(dead_code)]
     pub fn to_tile_position(&self, tile_size: u32) -> TilePosition {
         let tile_size = tile_size as f32;
         let col = (self.x / tile_size).floor() as u32;

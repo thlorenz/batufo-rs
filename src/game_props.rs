@@ -1,4 +1,8 @@
 pub const TILE_SIZE: u32 = 48;
+
+#[cfg(debug_assertions)]
+pub const USE_SPRITE_BATCH: bool = false;
+#[cfg(not_debug_assertions)]
 pub const USE_SPRITE_BATCH: bool = true;
 
 pub const ANTIQUE_WHITE: (u8, u8, u8) = (0xfa, 0xeb, 0xd7);

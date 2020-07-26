@@ -21,6 +21,8 @@ struct GameState {
     frames: usize,
     floor_view: FloorView,
     grid_view: GridView,
+
+    #[allow(dead_code)]
     font: graphics::Font,
 }
 

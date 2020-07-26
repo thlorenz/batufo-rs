@@ -8,21 +8,13 @@ use crate::game_props::GRID_COLOR;
 const LINE_WIDTH: f32 = 1.0;
 
 pub struct GridView {
-    ncols: u32,
-    nrows: u32,
-    tile_size: u32,
     mesh: Mesh,
 }
 
 impl GridView {
     pub fn new(ctx: &mut Context, ncols: u32, nrows: u32, tile_size: u32) -> GameResult<Self> {
         let mesh = build_mesh(ctx, ncols, nrows, tile_size)?;
-        Ok(GridView {
-            ncols,
-            nrows,
-            tile_size,
-            mesh,
-        })
+        Ok(GridView { mesh })
     }
 
     pub fn render(&mut self, ctx: &mut Context) -> GameResult {
