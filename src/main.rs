@@ -12,10 +12,16 @@ use crate::data::cameras::Cameras;
 use crate::data::player::Player;
 use crate::engine::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
-use crate::game_props::{ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, TILE_SIZE};
+use crate::game_props::{
+    ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, PLAYER_HIT_TILE_COLOR,
+    THRUST_ACCELERATION, TILE_SIZE,
+};
 use crate::views::floor_view::FloorView;
 use crate::views::grid_view::GridView;
+use crate::views::player_view::PlayerView;
+use ggez::event::KeyMods;
 use ggez::graphics::Image;
+use ggez::input::keyboard::KeyCode;
 use ggez::{event, timer};
 use ggez::{graphics, ContextBuilder};
 use ggez::{Context, GameResult};
@@ -24,6 +30,7 @@ struct GameState {
     frames: usize,
     floor_view: FloorView,
     grid_view: GridView,
+    player_view: PlayerView,
 
     cameras: Cameras,
     player: Player,
@@ -37,6 +44,7 @@ impl GameState {
         let font = graphics::Font::new(ctx, "/fonts/RobotoMono.ttf")?;
         let floor_view = init_floor_view(ctx, &arena)?;
         let grid_view = GridView::new(ctx, arena.ncols, arena.nrows, TILE_SIZE)?;
+        let player_view = PlayerView::new(PLAYER_HIT_TILE_COLOR.into(), TILE_SIZE);
         let ht = TILE_SIZE as f32 / 2.0;
 
         let cameras = Cameras::new();
@@ -47,6 +55,7 @@ impl GameState {
             font,
             floor_view,
             grid_view,
+            player_view,
 
             cameras,
             player,
@@ -78,6 +87,8 @@ impl event::EventHandler for GameState {
 
         self.grid_view.render(ctx)?;
         self.floor_view.render(ctx, &self.cameras.platform)?;
+        self.player_view
+            .render(ctx, &self.cameras.platform, &self.player)?;
         graphics::present(ctx)?;
 
         self.frames += 1;
@@ -88,6 +99,23 @@ impl event::EventHandler for GameState {
         }
 
         Ok(())
+    }
+
+    fn key_down_event(
+        &mut self,
+        ctx: &mut Context,
+        keycode: KeyCode,
+        _keymods: KeyMods,
+        _repeat: bool,
+    ) {
+        match keycode {
+            KeyCode::W => self.player.accelerate([0.0, THRUST_ACCELERATION]),
+            KeyCode::D => self.player.accelerate([-THRUST_ACCELERATION, 0.0]),
+            KeyCode::S => self.player.accelerate([0.0, -THRUST_ACCELERATION]),
+            KeyCode::A => self.player.accelerate([THRUST_ACCELERATION, 0.0]),
+            KeyCode::Escape => ctx.continuing = false,
+            _ => {}
+        };
     }
 }
 
