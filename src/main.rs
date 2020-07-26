@@ -55,8 +55,7 @@ impl event::EventHandler for GameState {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
         self.grid_view.render(ctx)?;
-        self.floor_view.render_debug(ctx)?;
-        // self.floor_view .render(ctx, game_props::USE_SPRITE_BATCH)?;
+        self.floor_view.render(ctx, game_props::USE_SPRITE_BATCH)?;
         graphics::present(ctx)?;
 
         self.frames += 1;

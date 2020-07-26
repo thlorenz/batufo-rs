@@ -9,10 +9,14 @@ pub struct ImageAsset {
     pub item_width: u32,
     pub item_height: u32,
     pub texture: Image,
+    width_fraction: f32,
+    height_fraction: f32,
 }
 
 impl ImageAsset {
     pub fn new(width: u32, height: u32, rows: u32, cols: u32, texture: Image) -> ImageAsset {
+        let width_fraction = 1.0 / cols as f32;
+        let height_fraction = 1.0 / rows as f32;
         ImageAsset {
             width,
             height,
@@ -22,18 +26,16 @@ impl ImageAsset {
             item_width: width / cols,
             item_height: height / rows,
             texture,
+            width_fraction,
+            height_fraction,
         }
     }
 
     pub fn rect(&self, row: u32, col: u32) -> Rect {
-        let x: u32 = col * self.item_width;
-        let y: u32 = row * self.item_height;
-        Rect::new(
-            x as f32,
-            y as f32,
-            self.item_width as f32,
-            self.item_height as f32,
-        )
+        let fx: f32 = col as f32 * self.width_fraction;
+        let fy: f32 = row as f32 * self.height_fraction;
+
+        Rect::new(fx, fy, self.width_fraction, self.height_fraction)
     }
 
     pub fn rect_for_idx(&self, idx: u32) -> Rect {
