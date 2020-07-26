@@ -4,6 +4,14 @@ version = "0.1.0"
 authors = ["Thorsten Lorenz <thlorenz@gmx.de>"]
 edition = "2018"
 
+[profile.dev]
+opt-level = 0
+[profile.dev.package.ggez]
+opt-level = 3
+
+[profile.release]
+opt-level = 3
+
 [dependencies]
 ggez = "0.5.1"
 
