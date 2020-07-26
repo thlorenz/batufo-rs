@@ -39,27 +39,16 @@ impl TilePosition {
         WorldPosition::from_tile_position(self, tile_size).to_rect(tile_size)
     }
 
-    #[allow(dead_code)]
     pub fn apply_velocity(&self, dt: f32, velocity: &Vector2<f32>, tile_size: u32) -> TilePosition {
         if *velocity == Vector2::new(0.0, 0.0) {
             return self.clone();
         }
         let wp = self.to_world_position(tile_size);
-        // TODO: due to rounding we're loosing info when velocity is very small
-        // it seems like we'd need to track world position as floats and only
-        // convert to pixels when drawing
         let dx = velocity.x * dt;
         let dy = velocity.y * dt;
         let x = wp.x + dx;
         let y = wp.y + dy;
         let new_wp = WorldPosition::new(x, y);
-        /*
-        eprintln!(
-            "({}) {:?} {:?} + ({}:{}) -> {:?}",
-            dt, velocity, wp, dx, dy, new_wp
-        );
-
-         */
         new_wp.to_tile_position(tile_size)
     }
 }

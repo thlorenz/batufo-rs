@@ -1,22 +1,19 @@
 use crate::arena::arena::Arena;
 use crate::engine::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
-use crate::game_props::AMBER_ACCENT;
 use ggez::graphics::spritebatch::SpriteBatch;
-use ggez::graphics::{DrawMode, FillOptions};
-use ggez::graphics::{DrawParam, MeshBuilder};
-use ggez::{graphics, nalgebra as na, Context, GameResult};
+use ggez::graphics::DrawParam;
+use ggez::graphics::Rect;
+use ggez::nalgebra::Point2;
+use ggez::{graphics, Context, GameResult};
 
 struct FloorTile {
-    center: na::Point2<f32>,
+    center: Point2<f32>,
     tile_idx: u32,
 }
 
 pub struct FloorView {
     sprite_batch: SpriteBatch,
-    asset: ImageAsset,
-    floor_tiles: Vec<FloorTile>,
-    tile_size: u32,
 }
 
 impl FloorView {
@@ -26,57 +23,21 @@ impl FloorView {
         let ht = (tile_size / 2) as f32;
         for tile in &floor_tiles {
             let src = asset.rect_for_idx(tile.tile_idx);
-            let dst = na::Point2::new(tile.center.coords.x - ht, tile.center.y - ht);
+            let dst = Point2::new(tile.center.coords.x - ht, tile.center.y - ht);
             let param = DrawParam::default().src(src).dest(dst);
             sprite_batch.add(param);
         }
-        FloorView {
-            sprite_batch,
-            floor_tiles,
-            tile_size,
-            asset,
-        }
+        FloorView { sprite_batch }
     }
 
     pub fn from_arena(asset: ImageAsset, arena: &Arena, tile_size: u32) -> FloorView {
         FloorView::new(asset, &arena.floor_tiles, tile_size)
     }
 
-    pub fn render(&self, ctx: &mut Context, use_sprite_batch: bool) -> GameResult {
-        if use_sprite_batch {
-            graphics::draw(ctx, &self.sprite_batch, (na::Point2::new(0.0, 0.0),))
-        } else {
-            for tile in &self.floor_tiles {
-                let src = self.asset.rect_for_idx(tile.tile_idx);
-                let param = DrawParam::default().src(src).dest(tile.center.clone());
-                graphics::draw(ctx, &self.asset.texture, param)?;
-            }
-            Ok(())
-        }
-    }
-
-    #[allow(dead_code)]
-    pub fn render_debug(&self, ctx: &mut Context) -> GameResult {
-        let ht = (self.tile_size / 2) as f32;
-        let draw_args = (na::Point2::new(0.0, 0.0), 0.0, graphics::WHITE);
-        let mut mesh_builder = MeshBuilder::new();
-        for tile in &self.floor_tiles {
-            let bounds = [
-                tile.center.coords.x - ht,
-                tile.center.y - ht,
-                self.tile_size as f32,
-                self.tile_size as f32,
-            ];
-            mesh_builder.rectangle(
-                DrawMode::Fill(FillOptions::default()),
-                bounds.into(),
-                AMBER_ACCENT.into(),
-            );
-        }
-        let mesh = mesh_builder.build(ctx)?;
-        graphics::draw(ctx, &mesh, draw_args)?;
-
-        Ok(())
+    pub fn render(&self, ctx: &mut Context, viewport: &Rect) -> GameResult {
+        let dst = Point2::new(viewport.x, viewport.y);
+        let param = DrawParam::default().dest(dst);
+        graphics::draw(ctx, &self.sprite_batch, param)
     }
 }
 
