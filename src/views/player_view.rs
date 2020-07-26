@@ -23,7 +23,8 @@ impl PlayerView {
     }
 
     pub fn render(&self, ctx: &mut Context, viewport: &Rect, player: &Player) -> GameResult {
-        let pos = player.tile_position.to_world_point_top_left(self.tile_size);
+        let wp = player.tile_position.to_world_point(self.tile_size);
+        let pos = Point2::new(wp.x - viewport.x, wp.y - viewport.y);
         self.render_debug_hit_tile(ctx, pos, player.radius)
     }
 

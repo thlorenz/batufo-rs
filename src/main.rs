@@ -45,10 +45,9 @@ impl GameState {
         let floor_view = init_floor_view(ctx, &arena)?;
         let grid_view = GridView::new(ctx, arena.ncols, arena.nrows, TILE_SIZE)?;
         let player_view = PlayerView::new(PLAYER_HIT_TILE_COLOR.into(), TILE_SIZE);
-        let ht = TILE_SIZE as f32 / 2.0;
 
         let cameras = Cameras::new();
-        let player = Player::new(TilePosition::new(2, 2, ht, ht), TILE_SIZE);
+        let player = Player::new(arena.player, TILE_SIZE);
 
         let s = GameState {
             frames: 0,
@@ -72,11 +71,14 @@ fn init_floor_view(ctx: &mut Context, arena: &Arena) -> GameResult<FloorView> {
 
 impl event::EventHandler for GameState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
+        // TODO: get this only on window resize in case it is expensive
+        let win = graphics::window(ctx);
+        let win_size = win.get_inner_size().unwrap();
         while timer::check_update_time(ctx, PHYSICS_SIMULATION_FPS) {
             self.player.update(PHYSICS_DELTA_TIME);
             self.cameras.update(
                 self.player.tile_position.to_world_point(TILE_SIZE),
-                &(1600.0, 1200.0),
+                &win_size.into(),
             );
         }
         Ok(())
@@ -85,8 +87,8 @@ impl event::EventHandler for GameState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
-        self.grid_view.render(ctx)?;
-        // self.floor_view.render(ctx, &self.cameras.platform)?;
+        self.grid_view.render(ctx, &self.cameras.platform)?;
+        self.floor_view.render(ctx, &self.cameras.platform)?;
         self.player_view
             .render(ctx, &self.cameras.platform, &self.player)?;
         graphics::present(ctx)?;

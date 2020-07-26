@@ -78,8 +78,9 @@ impl WorldPosition {
     }
 
     pub fn from_tile_position_top_left(tp: &TilePosition, tile_size: u32) -> WorldPosition {
-        let x = (tile_size * tp.col) as f32 + tp.rel_x - tile_size as f32;
-        let y = (tile_size * tp.row) as f32 + tp.rel_y - tile_size as f32;
+        let ht = tile_size as f32 / 2.0;
+        let x = (tile_size * tp.col) as f32 + tp.rel_x - ht;
+        let y = (tile_size * tp.row) as f32 + tp.rel_y - ht;
         WorldPosition::new(x, y)
     }
 

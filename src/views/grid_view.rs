@@ -1,4 +1,4 @@
-use ggez::graphics::{Mesh, MeshBuilder};
+use ggez::graphics::{Mesh, MeshBuilder, Rect};
 use ggez::nalgebra as na;
 use ggez::Context;
 use ggez::{graphics, GameResult};
@@ -17,8 +17,12 @@ impl GridView {
         Ok(GridView { mesh })
     }
 
-    pub fn render(&mut self, ctx: &mut Context) -> GameResult {
-        let draw_args = (na::Point2::new(0.0, 0.0), 0.0, graphics::WHITE);
+    pub fn render(&mut self, ctx: &mut Context, viewport: &Rect) -> GameResult {
+        let draw_args = (
+            na::Point2::new(-viewport.left(), -viewport.top()),
+            0.0,
+            graphics::WHITE,
+        );
         graphics::draw(ctx, &self.mesh, draw_args)
     }
 }

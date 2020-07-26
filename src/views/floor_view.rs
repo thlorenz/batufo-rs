@@ -35,8 +35,8 @@ impl FloorView {
     }
 
     pub fn render(&self, ctx: &mut Context, viewport: &Rect) -> GameResult {
-        let dst = Point2::new(viewport.x, viewport.y);
-        let param = DrawParam::default().dest(dst);
+        let dst = Point2::new(-viewport.left(), -viewport.top());
+        let param = (dst, 0.0, graphics::WHITE);
         graphics::draw(ctx, &self.sprite_batch, param)
     }
 }
