@@ -6,8 +6,6 @@ edition = "2018"
 
 [dependencies]
 ggez = "0.5.1"
-cgmath = { version = "0.17", features = ["mint"]}
-
 
 [[bin]]
 name="generate_conf"

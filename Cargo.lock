@@ -134,7 +134,6 @@ checksum = "b41b7ea54a0c9d92199de89e20e58d49f02f8e699814ef3fdf266f6f748d15c7"
 name = "batufo-rs"
 version = "0.1.0"
 dependencies = [
- "cgmath",
  "ggez",
 ]
 
@@ -262,18 +261,6 @@ checksum = "55e7ec0b74fe5897894cbc207092c577e87c52f8a59e8ca8d97ef37551f60a49"
 dependencies = [
  "gleam",
  "libc",
-]
-
-[[package]]
-name = "cgmath"
-version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "283944cdecc44bf0b8dd010ec9af888d3b4f142844fdbe026c20ef68148d6fe7"
-dependencies = [
- "approx",
- "mint",
- "num-traits 0.2.12",
- "rand 0.6.5",
 ]
 
 [[package]]

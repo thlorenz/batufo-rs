@@ -8,19 +8,20 @@ use std::path;
 
 use crate::arena::arena::Arena;
 use crate::engine::image_asset::ImageAsset;
-use crate::game_props::TILE_SIZE;
+use crate::game_props::{ANTIQUE_WHITE, TILE_SIZE};
 use crate::views::floor_view::FloorView;
-use cgmath;
+use crate::views::grid_view::GridView;
 use ggez;
-use ggez::conf::Backend;
 use ggez::event;
 use ggez::graphics;
 use ggez::graphics::{Color, Image};
+use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 
 struct GameState {
     frames: usize,
     floor_view: FloorView,
+    grid_view: GridView,
     font: graphics::Font,
 }
 
@@ -28,11 +29,13 @@ impl GameState {
     fn new(ctx: &mut Context, arena: Arena) -> GameResult<GameState> {
         let font = graphics::Font::new(ctx, "/fonts/RobotoMono.ttf")?;
         let floor_view = init_floor_view(ctx, &arena)?;
+        let grid_view = GridView::new(arena.ncols, arena.nrows, TILE_SIZE);
 
         let s = GameState {
             frames: 0,
             font,
             floor_view,
+            grid_view,
         };
         Ok(s)
     }
@@ -50,18 +53,10 @@ impl event::EventHandler for GameState {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        graphics::clear(ctx, Color::from_rgb(0xaa, 0xaa, 0xaa));
+        graphics::clear(ctx, ANTIQUE_WHITE.into());
 
-        let offset = self.frames as f32 / 10.0;
-        let dest_point = cgmath::Point2::new(offset, offset);
-        let text = graphics::Text::new((
-            format!("Frame: {}, Hello world! at {}", self.frames, offset),
-            self.font,
-            48.0,
-        ));
-
-        self.floor_view.render(ctx, game_props::USE_SPRITE_BATCH)?;
-        graphics::draw(ctx, &text, (dest_point, Color::from_rgb(255, 0, 0)))?;
+        // self.floor_view.render(ctx, game_props::USE_SPRITE_BATCH)?;
+        self.grid_view.render(ctx)?;
         graphics::present(ctx)?;
 
         self.frames += 1;
