@@ -14,8 +14,7 @@ use crate::views::grid_view::GridView;
 use ggez;
 use ggez::event;
 use ggez::graphics;
-use ggez::graphics::{Color, Image};
-use ggez::nalgebra as na;
+use ggez::graphics::Image;
 use ggez::{Context, GameResult};
 
 struct GameState {
@@ -55,8 +54,9 @@ impl event::EventHandler for GameState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
-        // self.floor_view.render(ctx, game_props::USE_SPRITE_BATCH)?;
         self.grid_view.render(ctx)?;
+        self.floor_view.render_debug(ctx)?;
+        // self.floor_view .render(ctx, game_props::USE_SPRITE_BATCH)?;
         graphics::present(ctx)?;
 
         self.frames += 1;
