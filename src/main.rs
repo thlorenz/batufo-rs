@@ -86,7 +86,7 @@ impl event::EventHandler for GameState {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
         self.grid_view.render(ctx)?;
-        self.floor_view.render(ctx, &self.cameras.platform)?;
+        // self.floor_view.render(ctx, &self.cameras.platform)?;
         self.player_view
             .render(ctx, &self.cameras.platform, &self.player)?;
         graphics::present(ctx)?;
@@ -109,10 +109,10 @@ impl event::EventHandler for GameState {
         _repeat: bool,
     ) {
         match keycode {
-            KeyCode::W => self.player.accelerate([0.0, THRUST_ACCELERATION]),
-            KeyCode::D => self.player.accelerate([-THRUST_ACCELERATION, 0.0]),
-            KeyCode::S => self.player.accelerate([0.0, -THRUST_ACCELERATION]),
-            KeyCode::A => self.player.accelerate([THRUST_ACCELERATION, 0.0]),
+            KeyCode::W => self.player.accelerate([0.0, -THRUST_ACCELERATION]),
+            KeyCode::D => self.player.accelerate([THRUST_ACCELERATION, 0.0]),
+            KeyCode::S => self.player.accelerate([0.0, THRUST_ACCELERATION]),
+            KeyCode::A => self.player.accelerate([-THRUST_ACCELERATION, 0.0]),
             KeyCode::Escape => ctx.continuing = false,
             _ => {}
         };

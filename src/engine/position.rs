@@ -25,13 +25,20 @@ impl TilePosition {
         TilePosition::new(col, row, rel_x, rel_y)
     }
 
-    #[allow(dead_code)]
+    pub fn to_world_position_top_left(&self, tile_size: u32) -> WorldPosition {
+        WorldPosition::from_tile_position_top_left(self, tile_size)
+    }
+
     pub fn to_world_position(&self, tile_size: u32) -> WorldPosition {
         WorldPosition::from_tile_position(self, tile_size)
     }
 
     pub fn to_world_point(&self, tile_size: u32) -> Point2<f32> {
         WorldPosition::from_tile_position(self, tile_size).to_point()
+    }
+
+    pub fn to_world_point_top_left(&self, tile_size: u32) -> Point2<f32> {
+        self.to_world_position_top_left(tile_size).to_point()
     }
 
     #[allow(dead_code)]
@@ -67,6 +74,12 @@ impl WorldPosition {
     pub fn from_tile_position(tp: &TilePosition, tile_size: u32) -> WorldPosition {
         let x = (tile_size * tp.col) as f32 + tp.rel_x;
         let y = (tile_size * tp.row) as f32 + tp.rel_y;
+        WorldPosition::new(x, y)
+    }
+
+    pub fn from_tile_position_top_left(tp: &TilePosition, tile_size: u32) -> WorldPosition {
+        let x = (tile_size * tp.col) as f32 + tp.rel_x - tile_size as f32;
+        let y = (tile_size * tp.row) as f32 + tp.rel_y - tile_size as f32;
         WorldPosition::new(x, y)
     }
 

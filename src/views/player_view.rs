@@ -1,5 +1,5 @@
 use crate::data::player::Player;
-use ggez::graphics::{Color, DrawMode, MeshBuilder, Rect, StrokeOptions};
+use ggez::graphics::{Color, DrawMode, DrawParam, MeshBuilder, Rect, StrokeOptions};
 use ggez::nalgebra::Point2;
 use ggez::{graphics, Context, GameResult};
 
@@ -23,8 +23,7 @@ impl PlayerView {
     }
 
     pub fn render(&self, ctx: &mut Context, viewport: &Rect, player: &Player) -> GameResult {
-        let pos = player.tile_position.to_world_point(self.tile_size);
-        let pos = Point2::new(pos.x - viewport.x, pos.y - viewport.y);
+        let pos = player.tile_position.to_world_point_top_left(self.tile_size);
         self.render_debug_hit_tile(ctx, pos, player.radius)
     }
 
@@ -36,14 +35,14 @@ impl PlayerView {
     ) -> GameResult {
         if self.debug_player_hit_tile {
             let width = radius * 2.0;
-            let rect = Rect::new(pos.x - radius, pos.y - radius, width, width);
+            let player_rect = Rect::new(-radius, -radius, width, width);
             let mode = DrawMode::Stroke(StrokeOptions::default());
 
             let mut mesh_builder = MeshBuilder::new();
-            mesh_builder.rectangle(mode, rect, self.player_hit_tile_color);
+            mesh_builder.rectangle(mode, player_rect, self.player_hit_tile_color);
             let mesh = mesh_builder.build(ctx)?;
-            let draw_args = (Point2::new(0.0, 0.0), 0.0, graphics::WHITE);
-            graphics::draw(ctx, &mesh, draw_args)
+            let draw_param = DrawParam::default().dest(pos);
+            graphics::draw(ctx, &mesh, draw_param)
         } else {
             Ok(())
         }
