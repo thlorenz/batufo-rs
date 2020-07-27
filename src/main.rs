@@ -11,10 +11,7 @@ use crate::arena::arena::Arena;
 use crate::data::cameras::Cameras;
 use crate::data::player::Player;
 use crate::engine::image_asset::ImageAsset;
-use crate::game_props::{
-    ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, PLANETS_FRONT_LERP, PLATFORM_LERP,
-    PLAYER_HIT_TILE_COLOR, THRUST_ACCELERATION, TILE_SIZE,
-};
+use crate::game_props::GameProps;
 use crate::views::floor_view::FloorView;
 use crate::views::grid_view::GridView;
 use crate::views::player_view::PlayerView;
@@ -34,19 +31,27 @@ struct GameState {
     cameras: Cameras,
     player: Player,
 
+    game_props: GameProps,
+
     #[allow(dead_code)]
     font: graphics::Font,
 }
 
 impl GameState {
-    fn new(ctx: &mut Context, arena: Arena) -> GameResult<GameState> {
+    fn new(ctx: &mut Context, arena: Arena, game_props: GameProps) -> GameResult<GameState> {
         let font = graphics::Font::new(ctx, "/fonts/RobotoMono.ttf")?;
-        let floor_view = init_floor_view(ctx, &arena)?;
-        let grid_view = GridView::new(ctx, arena.ncols, arena.nrows, TILE_SIZE)?;
-        let player_view = PlayerView::new(PLAYER_HIT_TILE_COLOR.into(), TILE_SIZE);
+        let floor_view = init_floor_view(ctx, &arena, game_props.tile_size)?;
+        let grid_view = GridView::new(
+            ctx,
+            arena.ncols,
+            arena.nrows,
+            game_props.tile_size,
+            game_props.grid_color,
+        )?;
+        let player_view = PlayerView::new(game_props.player_hit_tile_color, game_props.tile_size);
 
-        let cameras = Cameras::new(PLATFORM_LERP, PLANETS_FRONT_LERP);
-        let player = Player::new(arena.player, TILE_SIZE);
+        let cameras = Cameras::new(game_props.platform_lerp, game_props.planets_front_lerp);
+        let player = Player::new(arena.player, game_props.tile_size);
 
         let s = GameState {
             frames: 0,
@@ -57,27 +62,30 @@ impl GameState {
 
             cameras,
             player,
+
+            game_props,
         };
         Ok(s)
     }
 }
 
-fn init_floor_view(ctx: &mut Context, arena: &Arena) -> GameResult<FloorView> {
+fn init_floor_view(ctx: &mut Context, arena: &Arena, tile_size: u32) -> GameResult<FloorView> {
     let texture = Image::new(ctx, "/images/bg/floor-tiles.png")?;
     let image_asset = ImageAsset::new(384, 384, 8, 8, texture);
-    Ok(FloorView::from_arena(image_asset, arena, TILE_SIZE))
+    Ok(FloorView::from_arena(image_asset, arena, tile_size))
 }
 
 impl event::EventHandler for GameState {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
+        let gp = &self.game_props;
         // TODO: get this only on window resize in case it is expensive
         let win = graphics::window(ctx);
         let win_size = win.get_inner_size().unwrap();
-        while timer::check_update_time(ctx, PHYSICS_SIMULATION_FPS) {
-            self.player.update(PHYSICS_DELTA_TIME);
+        while timer::check_update_time(ctx, gp.physics_simulation_fps) {
+            self.player.update(gp.physics_delta_time);
             self.cameras.update(
-                PHYSICS_DELTA_TIME,
-                self.player.tile_position.to_world_point(TILE_SIZE),
+                gp.physics_delta_time,
+                self.player.tile_position.to_world_point(gp.tile_size),
                 &win_size.into(),
             );
         }
@@ -85,7 +93,8 @@ impl event::EventHandler for GameState {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        graphics::clear(ctx, ANTIQUE_WHITE.into());
+        let gp = &self.game_props;
+        graphics::clear(ctx, gp.antique_white.into());
 
         self.grid_view
             .render(ctx, self.cameras.planets_front_origin())?;
@@ -112,11 +121,12 @@ impl event::EventHandler for GameState {
         _keymods: KeyMods,
         _repeat: bool,
     ) {
+        let gp = &self.game_props;
         match keycode {
-            KeyCode::W => self.player.accelerate([0.0, -THRUST_ACCELERATION]),
-            KeyCode::D => self.player.accelerate([THRUST_ACCELERATION, 0.0]),
-            KeyCode::S => self.player.accelerate([0.0, THRUST_ACCELERATION]),
-            KeyCode::A => self.player.accelerate([-THRUST_ACCELERATION, 0.0]),
+            KeyCode::W => self.player.accelerate([0.0, -gp.thrust_acceleration]),
+            KeyCode::D => self.player.accelerate([gp.thrust_acceleration, 0.0]),
+            KeyCode::S => self.player.accelerate([0.0, gp.thrust_acceleration]),
+            KeyCode::A => self.player.accelerate([-gp.thrust_acceleration, 0.0]),
             KeyCode::Escape => ctx.continuing = false,
             _ => {}
         };
@@ -137,7 +147,9 @@ pub fn main() -> GameResult {
         .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut context_builder.build()?;
 
-    let arena = Arena::for_level("face off").expect("FATAL: unable to create arena");
-    let state = &mut GameState::new(ctx, arena)?;
+    let game_props = GameProps::default();
+    let arena =
+        Arena::for_level("face off", game_props.tile_size).expect("FATAL: unable to create arena");
+    let state = &mut GameState::new(ctx, arena, game_props)?;
     event::run(ctx, event_loop, state)
 }

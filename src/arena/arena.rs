@@ -1,7 +1,6 @@
 use crate::arena::levels::Levels;
 use crate::arena::tilemap::{needs_floor_tile, Tile, Tilemap};
 use crate::engine::position::TilePosition;
-use crate::game_props::TILE_SIZE;
 use std::error::Error;
 use std::fmt;
 
@@ -70,12 +69,12 @@ impl Arena {
         Arena::new(floor_tiles, walls, player, ncols, nrows)
     }
 
-    pub fn for_level(level_name: &'static str) -> Result<Arena, Box<dyn Error>> {
+    pub fn for_level(level_name: &'static str, tile_size: u32) -> Result<Arena, Box<dyn Error>> {
         let levels = Levels::new();
         let face_off = levels
             .get_level(level_name)
             .ok_or(format!("level not found '{}'", level_name))?;
-        let tilemap = Tilemap::new(face_off.terrain, TILE_SIZE)?;
+        let tilemap = Tilemap::new(face_off.terrain, tile_size)?;
         Ok(Arena::from_tilemap(tilemap))
     }
 }

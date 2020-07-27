@@ -1,9 +1,8 @@
-use ggez::graphics::{Mesh, MeshBuilder};
+use ggez::graphics::{Color, Mesh, MeshBuilder};
 use ggez::nalgebra as na;
 use ggez::Context;
 use ggez::{graphics, GameResult};
 
-use crate::game_props::GRID_COLOR;
 use ggez::nalgebra::Point2;
 
 const LINE_WIDTH: f32 = 1.0;
@@ -13,8 +12,14 @@ pub struct GridView {
 }
 
 impl GridView {
-    pub fn new(ctx: &mut Context, ncols: u32, nrows: u32, tile_size: u32) -> GameResult<Self> {
-        let mesh = build_mesh(ctx, ncols, nrows, tile_size)?;
+    pub fn new(
+        ctx: &mut Context,
+        ncols: u32,
+        nrows: u32,
+        tile_size: u32,
+        grid_color: Color,
+    ) -> GameResult<Self> {
+        let mesh = build_mesh(ctx, ncols, nrows, tile_size, grid_color)?;
         Ok(GridView { mesh })
     }
 
@@ -27,7 +32,13 @@ impl GridView {
     }
 }
 
-fn build_mesh(ctx: &mut Context, ncols: u32, nrows: u32, tile_size: u32) -> GameResult<Mesh> {
+fn build_mesh(
+    ctx: &mut Context,
+    ncols: u32,
+    nrows: u32,
+    tile_size: u32,
+    grid_color: Color,
+) -> GameResult<Mesh> {
     let max_x = (ncols * tile_size) as f32;
     let max_y = (nrows * tile_size) as f32;
 
@@ -37,7 +48,7 @@ fn build_mesh(ctx: &mut Context, ncols: u32, nrows: u32, tile_size: u32) -> Game
         mesh_builder.line(
             &[na::Point2::new(0.0, y), na::Point2::new(max_x, y)],
             LINE_WIDTH,
-            GRID_COLOR.into(),
+            grid_color,
         )?;
     }
     for col in 0..ncols + 1 {
@@ -45,7 +56,7 @@ fn build_mesh(ctx: &mut Context, ncols: u32, nrows: u32, tile_size: u32) -> Game
         mesh_builder.line(
             &[na::Point2::new(x, 0.0), na::Point2::new(x, max_y)],
             LINE_WIDTH,
-            GRID_COLOR.into(),
+            grid_color,
         )?;
     }
 
