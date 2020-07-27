@@ -87,10 +87,12 @@ impl event::EventHandler for GameState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
-        self.grid_view.render(ctx, &self.cameras.planets_front)?;
-        self.floor_view.render(ctx, &self.cameras.platform)?;
+        self.grid_view
+            .render(ctx, self.cameras.planets_front_origin())?;
+        self.floor_view
+            .render(ctx, self.cameras.platform_origin())?;
         self.player_view
-            .render(ctx, &self.cameras.platform, &self.player)?;
+            .render(ctx, self.cameras.platform_origin(), &self.player)?;
         graphics::present(ctx)?;
 
         self.frames += 1;

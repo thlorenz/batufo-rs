@@ -3,7 +3,6 @@ use crate::engine::image_asset::ImageAsset;
 use crate::engine::position::TilePosition;
 use ggez::graphics::spritebatch::SpriteBatch;
 use ggez::graphics::DrawParam;
-use ggez::graphics::Rect;
 use ggez::nalgebra::Point2;
 use ggez::{graphics, Context, GameResult};
 
@@ -34,9 +33,11 @@ impl FloorView {
         FloorView::new(asset, &arena.floor_tiles, tile_size)
     }
 
-    pub fn render(&self, ctx: &mut Context, viewport: &Rect) -> GameResult {
-        let dst = Point2::new(-viewport.left(), -viewport.top());
-        let param = (dst, 0.0, graphics::WHITE);
+    pub fn render<P>(&self, ctx: &mut Context, origin: P) -> GameResult
+    where
+        P: Into<Point2<f32>>,
+    {
+        let param = DrawParam::new().dest(origin.into());
         graphics::draw(ctx, &self.sprite_batch, param)
     }
 }

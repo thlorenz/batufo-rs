@@ -1,9 +1,10 @@
-use ggez::graphics::{Mesh, MeshBuilder, Rect};
+use ggez::graphics::{Mesh, MeshBuilder};
 use ggez::nalgebra as na;
 use ggez::Context;
 use ggez::{graphics, GameResult};
 
 use crate::game_props::GRID_COLOR;
+use ggez::nalgebra::Point2;
 
 const LINE_WIDTH: f32 = 1.0;
 
@@ -17,12 +18,11 @@ impl GridView {
         Ok(GridView { mesh })
     }
 
-    pub fn render(&mut self, ctx: &mut Context, viewport: &Rect) -> GameResult {
-        let draw_args = (
-            na::Point2::new(-viewport.left(), -viewport.top()),
-            0.0,
-            graphics::WHITE,
-        );
+    pub fn render<P>(&self, ctx: &mut Context, origin: P) -> GameResult
+    where
+        P: Into<Point2<f32>>,
+    {
+        let draw_args = (origin.into(), 0.0, graphics::WHITE);
         graphics::draw(ctx, &self.mesh, draw_args)
     }
 }
