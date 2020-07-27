@@ -12,8 +12,8 @@ use crate::data::cameras::Cameras;
 use crate::data::player::Player;
 use crate::engine::image_asset::ImageAsset;
 use crate::game_props::{
-    ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, PLAYER_HIT_TILE_COLOR,
-    THRUST_ACCELERATION, TILE_SIZE,
+    ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, PLANETS_FRONT_LERP, PLATFORM_LERP,
+    PLAYER_HIT_TILE_COLOR, THRUST_ACCELERATION, TILE_SIZE,
 };
 use crate::views::floor_view::FloorView;
 use crate::views::grid_view::GridView;
@@ -45,7 +45,7 @@ impl GameState {
         let grid_view = GridView::new(ctx, arena.ncols, arena.nrows, TILE_SIZE)?;
         let player_view = PlayerView::new(PLAYER_HIT_TILE_COLOR.into(), TILE_SIZE);
 
-        let cameras = Cameras::new();
+        let cameras = Cameras::new(PLATFORM_LERP, PLANETS_FRONT_LERP);
         let player = Player::new(arena.player, TILE_SIZE);
 
         let s = GameState {
@@ -87,7 +87,7 @@ impl event::EventHandler for GameState {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, ANTIQUE_WHITE.into());
 
-        self.grid_view.render(ctx, &self.cameras.platform)?;
+        self.grid_view.render(ctx, &self.cameras.planets_front)?;
         self.floor_view.render(ctx, &self.cameras.platform)?;
         self.player_view
             .render(ctx, &self.cameras.platform, &self.player)?;
