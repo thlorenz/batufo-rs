@@ -135,6 +135,9 @@ name = "batufo-rs"
 version = "0.1.0"
 dependencies = [
  "ggez",
+ "serde",
+ "serde_derive",
+ "toml",
 ]
 
 [[package]]

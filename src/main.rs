@@ -46,9 +46,12 @@ impl GameState {
             arena.ncols,
             arena.nrows,
             game_props.tile_size,
-            game_props.grid_color,
+            game_props.colors.grid_color.into(),
         )?;
-        let player_view = PlayerView::new(game_props.player_hit_tile_color, game_props.tile_size);
+        let player_view = PlayerView::new(
+            game_props.colors.player_hit_tile_color.into(),
+            game_props.tile_size,
+        );
 
         let cameras = Cameras::new(game_props.platform_lerp, game_props.planets_front_lerp);
         let player = Player::new(arena.player, game_props.tile_size);
@@ -94,7 +97,7 @@ impl event::EventHandler for GameState {
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let gp = &self.game_props;
-        graphics::clear(ctx, gp.antique_white.into());
+        graphics::clear(ctx, gp.colors.antique_white.into());
 
         self.grid_view
             .render(ctx, self.cameras.planets_front_origin())?;
@@ -148,6 +151,7 @@ pub fn main() -> GameResult {
     let (ctx, event_loop) = &mut context_builder.build()?;
 
     let game_props = GameProps::default();
+    game_props.to_toml();
     let arena =
         Arena::for_level("face off", game_props.tile_size).expect("FATAL: unable to create arena");
     let state = &mut GameState::new(ctx, arena, game_props)?;
