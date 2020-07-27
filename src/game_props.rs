@@ -8,3 +8,9 @@ pub const GRID_COLOR: (u8, u8, u8) = (128, 128, 128);
 pub const PLAYER_HIT_TILE_COLOR: (u8, u8, u8) = (0x33, 0x33, 0xff);
 
 pub const THRUST_ACCELERATION: f32 = 20.0;
+
+// pub const z10Lerp: f32 = 0.15;
+// pub const z20Lerp: f32 = 0.15;
+// pub const z30Lerp: f32 = 0.15;
+// pub const z40Lerp: f32 = 0.15;
+pub const PLATFORM_LERP: f32 = 1.0;

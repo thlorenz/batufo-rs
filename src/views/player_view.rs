@@ -18,6 +18,7 @@ impl PlayerView {
         }
     }
 
+    #[allow(dead_code)]
     pub fn debug(&mut self, debug_player_hit_tile: bool) {
         self.debug_player_hit_tile = debug_player_hit_tile;
     }

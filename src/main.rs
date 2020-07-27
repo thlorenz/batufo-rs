@@ -11,7 +11,6 @@ use crate::arena::arena::Arena;
 use crate::data::cameras::Cameras;
 use crate::data::player::Player;
 use crate::engine::image_asset::ImageAsset;
-use crate::engine::position::TilePosition;
 use crate::game_props::{
     ANTIQUE_WHITE, PHYSICS_DELTA_TIME, PHYSICS_SIMULATION_FPS, PLAYER_HIT_TILE_COLOR,
     THRUST_ACCELERATION, TILE_SIZE,
@@ -77,6 +76,7 @@ impl event::EventHandler for GameState {
         while timer::check_update_time(ctx, PHYSICS_SIMULATION_FPS) {
             self.player.update(PHYSICS_DELTA_TIME);
             self.cameras.update(
+                PHYSICS_DELTA_TIME,
                 self.player.tile_position.to_world_point(TILE_SIZE),
                 &win_size.into(),
             );
