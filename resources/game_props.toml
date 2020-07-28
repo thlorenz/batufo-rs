@@ -1,0 +1,15 @@
+[render]
+tile_size = 48
+
+[physics]
+simulation_fps = 60
+thrust_acceleration = 20.0
+
+[cameras]
+planets_front_lerp = 0.85
+platform_lerp = 1.0
+
+[colors]
+background = "0xfaebd7"
+grid_color = "0x808080"
+player_hit_tile_color = "0x3333ff"

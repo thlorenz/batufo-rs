@@ -1,5 +1,5 @@
 [package]
-name = "batufo-rs"
+name = "batufo"
 version = "0.1.0"
 authors = ["Thorsten Lorenz <thlorenz@gmx.de>"]
 edition = "2018"
@@ -17,7 +17,12 @@ ggez = "0.5.1"
 serde_derive = "1.0.114"
 serde = "1.0.114"
 toml = "0.5.6"
+serde-hex = "0.1.0"
 
 [[bin]]
 name="generate_conf"
-path="./bin/generate_conf.rs"
+path="bin/generate_conf.rs"
+
+[[bin]]
+name="generate_game_props"
+path="bin/generate_game_props.rs"
